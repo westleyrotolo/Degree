@@ -8,4 +8,9 @@
     <PackageReference Include="TweetinviAPI" Version="4.0.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Social\" />
+    <Folder Include="Social\Twitter\" />
+    <Folder Include="Social\Twitter\TweetAuth\" />
+  </ItemGroup>
 </Project>

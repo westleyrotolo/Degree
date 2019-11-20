@@ -26,6 +26,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Degree.AppDbContext\Degree.AppDbContext.csproj" />
     <ProjectReference Include="..\Degree.Models\Degree.Models.csproj" />
+    <ProjectReference Include="..\Degree.Services\Degree.Services.csproj" />
   </ItemGroup>
 
 </Project>

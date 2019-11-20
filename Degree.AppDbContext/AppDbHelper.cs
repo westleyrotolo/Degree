@@ -18,11 +18,11 @@ namespace Degree.AppDbContext
                 return obj;
             }
         }
-        public static IEnumerable<T> Fetch()
+        public static IList<TweetRaw> Fetch()
         {
             using (var context = new AppDbContext())
             {
-                var items = context.Set<T>().AsEnumerable();
+                var items = context.Tweets.Take(10).ToList();
                 return items;
             }
         }
