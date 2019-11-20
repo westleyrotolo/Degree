@@ -22,6 +22,6 @@ namespace Degree.AppDbContext
             base.OnModelCreating(modelBuilder);
         }
 
-        public DbSet<TweetRaw> Tweets { get; set; }
+        public DbSet<TweetRaw> TweetsRaw { get; set; }
     }
 }

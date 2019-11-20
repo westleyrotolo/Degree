@@ -1,17 +1,32 @@
 ﻿using System;
+using System.IO;
 using Tweetinvi.Models;
-
+using System.Linq;
 namespace Degree.Services.Social.Twitter.TweetAuth
 {
     public class TwitterAuthorize
     {
-        private static string CONSUMER_KEY = "v9oZgCQ1eNUoLSv5u38SoH7W8";
-        private static string CONSUMER_SECRET = "IUIUV11IJSuW2ZWPyMsyzCEofh6jeokCyADm9YtJYKKO6IoIlX";
-        private static string ACCESS_TOKEN = "172625287-UI5RCUc4f9j3lpqX4g5VRsGH7ddoO18MWhQeVG92";
-        private static string ACCESS_TOKEN_SECRET = "TId1mNuFVQvU2or1PlAUiiCvjw1vQus3MKVUjMS9BjGEZ";
+        private static string CONSUMER_KEY;
+        private static string CONSUMER_SECRET;
+        private static string ACCESS_TOKEN;
+        private static string ACCESS_TOKEN_SECRET;
         public static ITwitterCredentials GenerateCredentials()
         {
+            LoadKey();
             return new TwitterCredentials(CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET);
+        }
+        private static void LoadKey()
+        {
+            var root = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.Parent.FullName;
+            var path = Path.Combine(root, "config.txt");
+            string text = File.ReadAllText(path);
+            var properties = text.Replace("\r", "").Split("\n")
+            .ToDictionary(k => k.Split(":")[0], v => v.Split(":")[1]);
+
+            CONSUMER_KEY        = properties[nameof(CONSUMER_KEY)];
+            CONSUMER_SECRET     = properties[nameof(CONSUMER_SECRET)];
+            ACCESS_TOKEN        = properties[nameof(ACCESS_TOKEN)];
+            ACCESS_TOKEN_SECRET = properties[nameof(ACCESS_TOKEN_SECRET)];
         }
     }
 }   

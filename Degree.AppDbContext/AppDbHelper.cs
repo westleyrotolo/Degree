@@ -22,7 +22,7 @@ namespace Degree.AppDbContext
         {
             using (var context = new AppDbContext())
             {
-                var items = context.Tweets.Take(10).ToList();
+                var items = context.TweetsRaw.Take(10).ToList();
                 return items;
             }
         }

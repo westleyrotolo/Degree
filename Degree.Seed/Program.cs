@@ -16,21 +16,17 @@ namespace Degree.Seed
             do
             {
                 Console.Write("Inserisci comando");
-                response = Console.ReadLine();
+                response = Console.ReadKey().KeyChar.ToString();
                 if (response.Equals("1"))
                 {
                     using (var reader = new StreamReader(file))
                     using (var csv = new CsvReader(reader))
                     {
                         var tweets = csv.GetRecords<TweetRaw>();
-                        int i = 0;
                         foreach (var tweet in tweets)
                         {
-                            i++;
-                            if (i == 100)
-                                break;
                             await AppDbContext.AppDbHelper<TweetRaw>.InsertOrUpdateAsync(tweet);
-                            Console.WriteLine($"Tweet: {tweet.tweet_text}.\n User: {tweet.user_screen_name}.n Link:https://twitter.com/{tweet.user_id}/status/{tweet.tweet_id}");
+                            Console.WriteLine($"Tweet: {tweet.tweet_text}.\n User: {tweet.user_screen_name}`\n Link:https://twitter.com/{tweet.user_id}/status/{tweet.tweet_id}\n\n");
                         }
 
                     }
@@ -39,10 +35,12 @@ namespace Degree.Seed
                 {
 
                     var tweets = Degree.AppDbContext.AppDbHelper<TweetRaw>.Fetch().ToList();
-                    var tweet = Degree.Services.Social.Twitter.TwitterApi.FindById(tweets[0].tweet_id);
+                    Console.WriteLine($"Tweet: {tweets[1].tweet_text}.\n User: {tweets[1].user_screen_name}.n Link:https://twitter.com/{tweets[1].user_id}/status/{tweets[1].tweet_id}");
+
+                    var tweet = Degree.Services.Social.Twitter.TwitterApi.FindById(tweets[1].tweet_id);
                 }
 
-            } while (response.Equals("0"));
+            } while (!response.Equals("0"));
            
            
         }
