@@ -18,10 +18,22 @@ namespace Degree.AppDbContext
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<TweetRaw>().HasKey(x => x.id);
+            modelBuilder.Entity<TweetRaw>().HasKey(x => x.Id);
             base.OnModelCreating(modelBuilder);
         }
 
         public DbSet<TweetRaw> TweetsRaw { get; set; }
+        public DbSet<ExtendedTweet> ExtendedTweets { get; set; }
+        public DbSet<Entities> Entities { get; set; }
+        public DbSet<Media> Medias { get; set; }
+        public DbSet<Url> Urls { get; set; }
+        public DbSet<UserMention> UserMentions {get;set;}
+        public DbSet<Hashtag> Hashtags { get; set; }
+        public DbSet<Place> Places { get; set; }
+        public DbSet<BoundingBox> BoundingBoxes { get; set; }
+        public DbSet<Coordinates> Coordinates { get; set; }
+        public DbSet<User> Users { get; set; }
+
+
     }
 }
