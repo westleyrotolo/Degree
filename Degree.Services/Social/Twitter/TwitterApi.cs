@@ -24,11 +24,10 @@ namespace Degree.Services.Social.Twitter
          
             TweetinviConfig.CurrentThreadSettings.TweetMode = TweetMode.Extended;
             ITweet t;
-            Tweetinvi.TwitterList.
-            var tweetDTO = TwitterAccessor.ExecutePOSTQueryReturningJson("/1.1/tweets/search/30day/analysis.json?query=from:wesrotolo");
-            var tweet = Tweet.GetTweet(id);
+            
+              var tweet = Tweet.GetTweet(id);
             var extended = tweet.ExtendedTweet;
             return tweet;
-        }
+         }
     }
 }

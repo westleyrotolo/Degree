@@ -195,7 +195,7 @@ namespace Degree.Models
         [JsonProperty("id")]
         public string Id { get; set; }
         [JsonProperty("attributes", NullValueHandling = NullValueHandling.Ignore)]
-        public object Attributes { get; set; }
+        public string Attributes { get; set; }
         [JsonProperty("bounding_box", NullValueHandling = NullValueHandling.Ignore)]
         public BoundingBox BoundingBox { get; set; }
         [JsonProperty("country")]

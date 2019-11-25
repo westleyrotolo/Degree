@@ -53,7 +53,7 @@ namespace Degree.Seed
                         foreach (var tweet in tweets)
                         {
                             await AppDbContext.AppDbHelper<TweetRaw>.InsertOrUpdateAsync(tweet);
-                            Console.WriteLine($"Tweet: {tweet.tweet_text}.\n User: {tweet.user_screen_name}`\n Link:https://twitter.com/{tweet.user_id}/status/{tweet.tweet_id}\n\n");
+                         //   Console.WriteLine($"Tweet: {tweet.tweet_text}.\n User: {tweet.user_screen_name}`\n Link:https://twitter.com/{tweet.user_id}/status/{tweet.tweet_id}\n\n");
                         }
 
                     }
@@ -62,9 +62,9 @@ namespace Degree.Seed
                 {
 
                     var tweets = Degree.AppDbContext.AppDbHelper<TweetRaw>.Fetch().ToList();
-                    Console.WriteLine($"Tweet: {tweets[7].tweet_text}.\n User: {tweets[7].user_screen_name}.n Link:https://twitter.com/{tweets[7].user_id}/status/{tweets[7].tweet_id}");
+                 //   Console.WriteLine($"Tweet: {tweets[7].tweet_text}.\n User: {tweets[7].user_screen_name}.n Link:https://twitter.com/{tweets[7].user_id}/status/{tweets[7].tweet_id}");
 
-                    var tweet = Degree.Services.Social.Twitter.TwitterApi.FindById(tweets[7].tweet_id);
+                //    var tweet = Degree.Services.Social.Twitter.TwitterApi.FindById(tweets[7].tweet_id);
                 }
 
             } while (!response.Equals("0"));
