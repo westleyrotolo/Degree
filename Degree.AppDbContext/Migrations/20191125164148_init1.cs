@@ -4,22 +4,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Degree.AppDbContext.Migrations
 {
-    public partial class Refactor : Migration
+    public partial class init1 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "Entities",
-                columns: table => new
-                {
-                    TweetRawId = table.Column<long>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Entities", x => x.TweetRawId);
-                });
-
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
@@ -47,29 +35,38 @@ namespace Degree.AppDbContext.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ExtendedTweets",
+                columns: table => new
+                {
+                    TweetRawId = table.Column<long>(nullable: false),
+                    FullText = table.Column<string>(nullable: true),
+                    DisplayTextRange = table.Column<string>(nullable: true),
+                    EntitiesEntitieId = table.Column<Guid>(nullable: true),
+                    ExtendedEntitiesEntitieId = table.Column<Guid>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ExtendedTweets", x => x.TweetRawId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Hashtags",
                 columns: table => new
                 {
-                    EntitiesId = table.Column<long>(nullable: false),
+                    EntitiesId = table.Column<Guid>(nullable: false),
                     Text = table.Column<string>(nullable: true),
                     Indices = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Hashtags", x => x.EntitiesId);
-                    table.ForeignKey(
-                        name: "FK_Hashtags_Entities_EntitiesId",
-                        column: x => x.EntitiesId,
-                        principalTable: "Entities",
-                        principalColumn: "TweetRawId",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Medias",
                 columns: table => new
                 {
-                    EntitiesId = table.Column<long>(nullable: false),
+                    EntitiesId = table.Column<Guid>(nullable: false),
                     DisplayUrl = table.Column<string>(nullable: true),
                     ExtendedUrl = table.Column<string>(nullable: true),
                     MediaUrl = table.Column<string>(nullable: true),
@@ -79,54 +76,6 @@ namespace Degree.AppDbContext.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Medias", x => x.EntitiesId);
-                    table.ForeignKey(
-                        name: "FK_Medias_Entities_EntitiesId",
-                        column: x => x.EntitiesId,
-                        principalTable: "Entities",
-                        principalColumn: "TweetRawId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Urls",
-                columns: table => new
-                {
-                    EntitiesId = table.Column<long>(nullable: false),
-                    TweetUrl = table.Column<string>(nullable: true),
-                    ExpandedUrl = table.Column<string>(nullable: true),
-                    DisplayUrl = table.Column<string>(nullable: true),
-                    Indices = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Urls", x => x.EntitiesId);
-                    table.ForeignKey(
-                        name: "FK_Urls_Entities_EntitiesId",
-                        column: x => x.EntitiesId,
-                        principalTable: "Entities",
-                        principalColumn: "TweetRawId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "UserMentions",
-                columns: table => new
-                {
-                    EntitiesId = table.Column<long>(nullable: false),
-                    Id = table.Column<string>(nullable: true),
-                    ScreenName = table.Column<string>(nullable: true),
-                    Name = table.Column<string>(nullable: true),
-                    Indices = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserMentions", x => x.EntitiesId);
-                    table.ForeignKey(
-                        name: "FK_UserMentions_Entities_EntitiesId",
-                        column: x => x.EntitiesId,
-                        principalTable: "Entities",
-                        principalColumn: "TweetRawId",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -149,25 +98,13 @@ namespace Degree.AppDbContext.Migrations
                     ReplyCount = table.Column<long>(nullable: false),
                     RetweetCount = table.Column<long>(nullable: false),
                     FavoriteCount = table.Column<long>(nullable: false),
-                    EntitiesId = table.Column<long>(nullable: false),
-                    ExtendedEntitiesId = table.Column<long>(nullable: false),
+                    EntitiesId = table.Column<Guid>(nullable: false),
+                    ExtendedEntitiesId = table.Column<Guid>(nullable: false),
                     Lang = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_TweetsRaw", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_TweetsRaw_Entities_EntitiesId",
-                        column: x => x.EntitiesId,
-                        principalTable: "Entities",
-                        principalColumn: "TweetRawId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_TweetsRaw_Entities_ExtendedEntitiesId",
-                        column: x => x.ExtendedEntitiesId,
-                        principalTable: "Entities",
-                        principalColumn: "TweetRawId",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_TweetsRaw_TweetsRaw_QuotedStatusId",
                         column: x => x.QuotedStatusId,
@@ -202,36 +139,23 @@ namespace Degree.AppDbContext.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ExtendedTweets",
+                name: "Entities",
                 columns: table => new
                 {
+                    EntitieId = table.Column<Guid>(nullable: false),
                     TweetRawId = table.Column<long>(nullable: false),
-                    FullText = table.Column<string>(nullable: true),
-                    DisplayTextRange = table.Column<string>(nullable: true),
-                    EntitiesTweetRawId = table.Column<long>(nullable: true),
-                    ExtendedEntitiesTweetRawId = table.Column<long>(nullable: true)
+                    ExtendedTweetRawId = table.Column<long>(nullable: false),
+                    TweetRawId2 = table.Column<long>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ExtendedTweets", x => x.TweetRawId);
+                    table.PrimaryKey("PK_Entities", x => x.EntitieId);
                     table.ForeignKey(
-                        name: "FK_ExtendedTweets_Entities_EntitiesTweetRawId",
-                        column: x => x.EntitiesTweetRawId,
-                        principalTable: "Entities",
-                        principalColumn: "TweetRawId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ExtendedTweets_Entities_ExtendedEntitiesTweetRawId",
-                        column: x => x.ExtendedEntitiesTweetRawId,
-                        principalTable: "Entities",
-                        principalColumn: "TweetRawId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ExtendedTweets_TweetsRaw_TweetRawId",
-                        column: x => x.TweetRawId,
+                        name: "FK_Entities_TweetsRaw_TweetRawId2",
+                        column: x => x.TweetRawId2,
                         principalTable: "TweetsRaw",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -260,6 +184,48 @@ namespace Degree.AppDbContext.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Urls",
+                columns: table => new
+                {
+                    EntitiesId = table.Column<Guid>(nullable: false),
+                    TweetUrl = table.Column<string>(nullable: true),
+                    ExpandedUrl = table.Column<string>(nullable: true),
+                    DisplayUrl = table.Column<string>(nullable: true),
+                    Indices = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Urls", x => x.EntitiesId);
+                    table.ForeignKey(
+                        name: "FK_Urls_Entities_EntitiesId",
+                        column: x => x.EntitiesId,
+                        principalTable: "Entities",
+                        principalColumn: "EntitieId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserMentions",
+                columns: table => new
+                {
+                    EntitiesId = table.Column<Guid>(nullable: false),
+                    Id = table.Column<string>(nullable: true),
+                    ScreenName = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: true),
+                    Indices = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserMentions", x => x.EntitiesId);
+                    table.ForeignKey(
+                        name: "FK_UserMentions_Entities_EntitiesId",
+                        column: x => x.EntitiesId,
+                        principalTable: "Entities",
+                        principalColumn: "EntitieId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "BoundingBoxes",
                 columns: table => new
                 {
@@ -279,14 +245,19 @@ namespace Degree.AppDbContext.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ExtendedTweets_EntitiesTweetRawId",
-                table: "ExtendedTweets",
-                column: "EntitiesTweetRawId");
+                name: "IX_Entities_TweetRawId2",
+                table: "Entities",
+                column: "TweetRawId2");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ExtendedTweets_ExtendedEntitiesTweetRawId",
+                name: "IX_ExtendedTweets_EntitiesEntitieId",
                 table: "ExtendedTweets",
-                column: "ExtendedEntitiesTweetRawId");
+                column: "EntitiesEntitieId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ExtendedTweets_ExtendedEntitiesEntitieId",
+                table: "ExtendedTweets",
+                column: "ExtendedEntitiesEntitieId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Places_TweetRawId",
@@ -316,10 +287,70 @@ namespace Degree.AppDbContext.Migrations
                 name: "IX_TweetsRaw_UserId",
                 table: "TweetsRaw",
                 column: "UserId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_ExtendedTweets_TweetsRaw_TweetRawId",
+                table: "ExtendedTweets",
+                column: "TweetRawId",
+                principalTable: "TweetsRaw",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_ExtendedTweets_Entities_EntitiesEntitieId",
+                table: "ExtendedTweets",
+                column: "EntitiesEntitieId",
+                principalTable: "Entities",
+                principalColumn: "EntitieId",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_ExtendedTweets_Entities_ExtendedEntitiesEntitieId",
+                table: "ExtendedTweets",
+                column: "ExtendedEntitiesEntitieId",
+                principalTable: "Entities",
+                principalColumn: "EntitieId",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Hashtags_Entities_EntitiesId",
+                table: "Hashtags",
+                column: "EntitiesId",
+                principalTable: "Entities",
+                principalColumn: "EntitieId",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Medias_Entities_EntitiesId",
+                table: "Medias",
+                column: "EntitiesId",
+                principalTable: "Entities",
+                principalColumn: "EntitieId",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_TweetsRaw_Entities_EntitiesId",
+                table: "TweetsRaw",
+                column: "EntitiesId",
+                principalTable: "Entities",
+                principalColumn: "EntitieId",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_TweetsRaw_Entities_ExtendedEntitiesId",
+                table: "TweetsRaw",
+                column: "ExtendedEntitiesId",
+                principalTable: "Entities",
+                principalColumn: "EntitieId",
+                onDelete: ReferentialAction.Cascade);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Entities_TweetsRaw_TweetRawId2",
+                table: "Entities");
+
             migrationBuilder.DropTable(
                 name: "BoundingBoxes");
 

@@ -3,14 +3,16 @@ using System;
 using Degree.AppDbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Degree.AppDbContext.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191125164148_init1")]
+    partial class init1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -184,10 +186,10 @@ namespace Degree.AppDbContext.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<Guid?>("EntitiesId")
+                    b.Property<Guid>("EntitiesId")
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid?>("ExtendedEntitiesId")
+                    b.Property<Guid>("ExtendedEntitiesId")
                         .HasColumnType("char(36)");
 
                     b.Property<long>("FavoriteCount")
@@ -196,10 +198,10 @@ namespace Degree.AppDbContext.Migrations
                     b.Property<string>("InReplyToScreenName")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<long?>("InReplyToStatusId")
+                    b.Property<long>("InReplyToStatusId")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("InReplyToUserId")
+                    b.Property<long>("InReplyToUserId")
                         .HasColumnType("bigint");
 
                     b.Property<bool>("IsQuoteStatus")
@@ -211,7 +213,7 @@ namespace Degree.AppDbContext.Migrations
                     b.Property<long>("QuoteCount")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("QuotedStatusId")
+                    b.Property<long>("QuotedStatusId")
                         .HasColumnType("bigint");
 
                     b.Property<long>("ReplyCount")
@@ -418,15 +420,21 @@ namespace Degree.AppDbContext.Migrations
                 {
                     b.HasOne("Degree.Models.Entities", "Entities")
                         .WithOne("TweetRaw")
-                        .HasForeignKey("Degree.Models.TweetRaw", "EntitiesId");
+                        .HasForeignKey("Degree.Models.TweetRaw", "EntitiesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Degree.Models.Entities", "ExtendedEntities")
                         .WithOne("ExtendedTweetRaw")
-                        .HasForeignKey("Degree.Models.TweetRaw", "ExtendedEntitiesId");
+                        .HasForeignKey("Degree.Models.TweetRaw", "ExtendedEntitiesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Degree.Models.TweetRaw", "QuotedStatus")
                         .WithOne("RetweetedStatus")
-                        .HasForeignKey("Degree.Models.TweetRaw", "QuotedStatusId");
+                        .HasForeignKey("Degree.Models.TweetRaw", "QuotedStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Degree.Models.User", "User")
                         .WithMany("TweetRaws")

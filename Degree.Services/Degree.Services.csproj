@@ -9,8 +9,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Social\" />
-    <Folder Include="Social\Twitter\" />
-    <Folder Include="Social\Twitter\TweetAuth\" />
+    <ProjectReference Include="..\Degree.Models\Degree.Models.csproj" />
   </ItemGroup>
 </Project>

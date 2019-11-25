@@ -9,8 +9,10 @@ namespace Degree.AppDbContext
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
+            
             if (optionsBuilder != null)
             {
+                optionsBuilder.EnableSensitiveDataLogging(true);
                 optionsBuilder.UseMySql("Server=degree.mysql.database.azure.com; Port=3306; Database=degree; Uid=westley@degree; Pwd=Sentiment2019.; SslMode=Preferred;");
             }
         }
@@ -18,20 +20,29 @@ namespace Degree.AppDbContext
         {
             modelBuilder.Entity<TweetRaw>().HasKey(x => x.Id);
 
-            modelBuilder.Entity<TweetRaw>().HasOne(e => e.Entities)
-            .WithOne().HasForeignKey<TweetRaw>(x => x.EntitiesId);
+            modelBuilder.Entity<TweetRaw>()
+            .HasMany(e => e._Entities)
+            .WithOne();
 
-            modelBuilder.Entity<TweetRaw>().HasOne(e => e.ExtendedEntities)
-            .WithOne().HasForeignKey<TweetRaw>(x => x.ExtendedEntitiesId);
+            
+            modelBuilder.Entity<Entities>()
+            .HasOne(e => e.ExtendedTweetRaw)
+            .WithOne(e => e.ExtendedEntities)
+            .HasForeignKey<TweetRaw>(x => x.ExtendedEntitiesId);
 
-            modelBuilder.Entity<TweetRaw>().HasOne(e => e.ExtendedEntities)
-            .WithOne(e => e.TweetRaw);
 
-            modelBuilder.Entity<TweetRaw>().HasOne(e => e.ExtendedTweet)
+            modelBuilder.Entity<Entities>()
+            .HasOne(e => e.TweetRaw)
+            .WithOne(e => e.Entities)
+            .HasForeignKey<TweetRaw>(x => x.EntitiesId);
+
+    
+            modelBuilder.Entity<TweetRaw>()
+            .HasOne(e => e.ExtendedTweet)
             .WithOne(e => e.TweetRaw);
 
             modelBuilder.Entity<ExtendedTweet>()
-                    .HasOne(x => x.Entities);
+            .HasOne(x => x.Entities);
             modelBuilder.Entity<BoundingBox>()
             .Property(e => e.Coordinates)
             .HasConversion(

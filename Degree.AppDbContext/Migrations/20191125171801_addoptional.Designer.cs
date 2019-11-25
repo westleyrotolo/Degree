@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Degree.AppDbContext.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20191125093212_Refactor")]
-    partial class Refactor
+    [Migration("20191125171801_addoptional")]
+    partial class addoptional
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -53,11 +53,22 @@ namespace Degree.AppDbContext.Migrations
 
             modelBuilder.Entity("Degree.Models.Entities", b =>
                 {
-                    b.Property<long>("TweetRawId")
+                    b.Property<Guid>("EntitieId")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<long>("ExtendedTweetRawId")
                         .HasColumnType("bigint");
 
-                    b.HasKey("TweetRawId");
+                    b.Property<long>("TweetRawId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("TweetRawId2")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("EntitieId");
+
+                    b.HasIndex("TweetRawId2");
 
                     b.ToTable("Entities");
                 });
@@ -70,28 +81,28 @@ namespace Degree.AppDbContext.Migrations
                     b.Property<string>("DisplayTextRange")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<long?>("EntitiesTweetRawId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid?>("EntitiesEntitieId")
+                        .HasColumnType("char(36)");
 
-                    b.Property<long?>("ExtendedEntitiesTweetRawId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid?>("ExtendedEntitiesEntitieId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("FullText")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.HasKey("TweetRawId");
 
-                    b.HasIndex("EntitiesTweetRawId");
+                    b.HasIndex("EntitiesEntitieId");
 
-                    b.HasIndex("ExtendedEntitiesTweetRawId");
+                    b.HasIndex("ExtendedEntitiesEntitieId");
 
                     b.ToTable("ExtendedTweets");
                 });
 
             modelBuilder.Entity("Degree.Models.Hashtag", b =>
                 {
-                    b.Property<long>("EntitiesId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("EntitiesId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Indices")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
@@ -106,8 +117,8 @@ namespace Degree.AppDbContext.Migrations
 
             modelBuilder.Entity("Degree.Models.Media", b =>
                 {
-                    b.Property<long>("EntitiesId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("EntitiesId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("DisplayUrl")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
@@ -175,11 +186,11 @@ namespace Degree.AppDbContext.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<long>("EntitiesId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid?>("EntitiesId")
+                        .HasColumnType("char(36)");
 
-                    b.Property<long>("ExtendedEntitiesId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid?>("ExtendedEntitiesId")
+                        .HasColumnType("char(36)");
 
                     b.Property<long>("FavoriteCount")
                         .HasColumnType("bigint");
@@ -187,10 +198,10 @@ namespace Degree.AppDbContext.Migrations
                     b.Property<string>("InReplyToScreenName")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<long>("InReplyToStatusId")
+                    b.Property<long?>("InReplyToStatusId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("InReplyToUserId")
+                    b.Property<long?>("InReplyToUserId")
                         .HasColumnType("bigint");
 
                     b.Property<bool>("IsQuoteStatus")
@@ -241,8 +252,8 @@ namespace Degree.AppDbContext.Migrations
 
             modelBuilder.Entity("Degree.Models.Url", b =>
                 {
-                    b.Property<long>("EntitiesId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("EntitiesId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("DisplayUrl")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
@@ -316,8 +327,8 @@ namespace Degree.AppDbContext.Migrations
 
             modelBuilder.Entity("Degree.Models.UserMention", b =>
                 {
-                    b.Property<long>("EntitiesId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("EntitiesId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Id")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
@@ -354,15 +365,22 @@ namespace Degree.AppDbContext.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Degree.Models.Entities", b =>
+                {
+                    b.HasOne("Degree.Models.TweetRaw", null)
+                        .WithMany("_Entities")
+                        .HasForeignKey("TweetRawId2");
+                });
+
             modelBuilder.Entity("Degree.Models.ExtendedTweet", b =>
                 {
                     b.HasOne("Degree.Models.Entities", "Entities")
                         .WithMany()
-                        .HasForeignKey("EntitiesTweetRawId");
+                        .HasForeignKey("EntitiesEntitieId");
 
                     b.HasOne("Degree.Models.Entities", "ExtendedEntities")
                         .WithMany()
-                        .HasForeignKey("ExtendedEntitiesTweetRawId");
+                        .HasForeignKey("ExtendedEntitiesEntitieId");
 
                     b.HasOne("Degree.Models.TweetRaw", "TweetRaw")
                         .WithOne("ExtendedTweet")
@@ -401,16 +419,12 @@ namespace Degree.AppDbContext.Migrations
             modelBuilder.Entity("Degree.Models.TweetRaw", b =>
                 {
                     b.HasOne("Degree.Models.Entities", "Entities")
-                        .WithOne()
-                        .HasForeignKey("Degree.Models.TweetRaw", "EntitiesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithOne("TweetRaw")
+                        .HasForeignKey("Degree.Models.TweetRaw", "EntitiesId");
 
                     b.HasOne("Degree.Models.Entities", "ExtendedEntities")
-                        .WithOne("TweetRaw")
-                        .HasForeignKey("Degree.Models.TweetRaw", "ExtendedEntitiesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithOne("ExtendedTweetRaw")
+                        .HasForeignKey("Degree.Models.TweetRaw", "ExtendedEntitiesId");
 
                     b.HasOne("Degree.Models.TweetRaw", "QuotedStatus")
                         .WithOne("RetweetedStatus")

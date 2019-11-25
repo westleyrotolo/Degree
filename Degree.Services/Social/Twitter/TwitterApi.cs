@@ -15,7 +15,7 @@ namespace Degree.Services.Social.Twitter
         }
         private static void Login()
         {
-            Auth.SetCredentials(TwitterAuthorize.GenerateCredentials());
+            Auth.SetCredentials(TwitterAuthorize.TweetinviCredentials());
             var authenticatedUser = User.GetAuthenticatedUser();
         }
         public static ITweet FindById(long id)
@@ -29,5 +29,6 @@ namespace Degree.Services.Social.Twitter
             var extended = tweet.ExtendedTweet;
             return tweet;
          }
+
     }
 }

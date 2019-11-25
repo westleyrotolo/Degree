@@ -51,11 +51,11 @@ namespace Degree.Models
 
         //represented Tweet is a reply, this field will contain the integer representation of the original Tweet’s ID
         [JsonProperty("in_reply_to_status_id", NullValueHandling = NullValueHandling.Ignore)]
-        public long InReplyToStatusId { get; set; }
+        public long? InReplyToStatusId { get; set; }
 
         //represented Tweet is a reply, this field will contain the integer representation of the original Tweet’s author ID. This will not necessarily always be the user directly mentioned in the Tweet. 
         [JsonProperty("in_reply_to_user_id", NullValueHandling = NullValueHandling.Ignore)]
-        public long InReplyToUserId { get; set; }
+        public long? InReplyToUserId { get; set; }
 
         //represented Tweet is a reply, this field will contain the screen name of the original Tweet’s author
         [JsonProperty("in_reply_to_screen_name", NullValueHandling = NullValueHandling.Ignore)]
@@ -75,7 +75,7 @@ namespace Degree.Models
         public Place Place { get; set; }
 
         [JsonProperty("quoted_status_id")]
-        public long QuotedStatusId { get; set; }
+        public long? QuotedStatusId { get; set; }
 
         [JsonProperty("is_quote_status")]
         public bool IsQuoteStatus { get; set; }
@@ -102,18 +102,22 @@ namespace Degree.Models
         [JsonProperty("entities")]
         public Entities Entities { get; set; }
         [JsonIgnore]
-        public long EntitiesId { get; set;  }
+        [ForeignKey("Entities")]
+        public Guid? EntitiesId { get; set;  }
 
         [JsonProperty("extended_entities")]
         public Entities ExtendedEntities { get; set; }
         [JsonIgnore]
-        public long ExtendedEntitiesId { get; set; }
+        [ForeignKey("ExtendedEntities")]
+        public Guid? ExtendedEntitiesId { get; set; }
 
         [JsonProperty("extended_tweet", NullValueHandling = NullValueHandling.Ignore)]
         public ExtendedTweet ExtendedTweet { get; set; }
 
         [JsonProperty("lang")]
         public string Lang { get; set; }
+        [JsonIgnore]
+        public List<Entities> _Entities { get; set; }
     }
     public class ExtendedTweet
     {
@@ -135,14 +139,21 @@ namespace Degree.Models
         public Entities ExtendedEntities { get; set; }
 
         [JsonIgnore]
-        public virtual TweetRaw TweetRaw { get; set; }
+        public TweetRaw TweetRaw { get; set; }
     }
     public class Entities
     {
         [Key]
+        [JsonIgnore]
+        public Guid EntitieId { get; set; }
+
+        [JsonIgnore]
         [ForeignKey("TweetRaw")]
         public long TweetRawId { get; set; }
 
+        [JsonIgnore]
+        [ForeignKey("ExtendedTweetRaw")]
+        public long ExtendedTweetRawId { get; set; }
         [JsonProperty("hashtags", NullValueHandling = NullValueHandling.Ignore)]
         public List<Hashtag> Hashtags { get; set; }
 
@@ -156,7 +167,10 @@ namespace Degree.Models
         public List<Media> Media { get; set; }
 
         [JsonIgnore]
-        public virtual TweetRaw  TweetRaw { get; set; }
+        public TweetRaw TweetRaw { get; set; }
+
+        [JsonIgnore]
+        public TweetRaw ExtendedTweetRaw { get; set; }
     }
     public class ExtendedEntities
     {
@@ -177,7 +191,7 @@ namespace Degree.Models
         public List<Media> Media { get; set; }
 
         [JsonIgnore]
-        public virtual TweetRaw TweetRaw { get; set; }
+        public TweetRaw TweetRaw { get; set; }
     }
     public class Media
     {
@@ -185,7 +199,7 @@ namespace Degree.Models
         [JsonIgnore]
         [Key]
         [ForeignKey("Entities")]
-        public long EntitiesId { get; set; }
+        public Guid EntitiesId { get; set; }
 
         [JsonProperty("display_url")]
         public string DisplayUrl { get; set; }
@@ -203,7 +217,7 @@ namespace Degree.Models
         public string Url { get; set; }
 
         [JsonIgnore]
-        public virtual Entities Entities { get; set; }
+        public Entities Entities { get; set; }
     }
     public class Url
     {
@@ -212,7 +226,7 @@ namespace Degree.Models
         [JsonIgnore]
         [Key]
         [ForeignKey("Entities")]
-        public long EntitiesId { get; set; }
+        public Guid EntitiesId { get; set; }
 
         [JsonProperty("url", NullValueHandling = NullValueHandling.Ignore)]
         public string TweetUrl { get; set; }
@@ -227,14 +241,14 @@ namespace Degree.Models
         public List<long> Indices { get; set; }
 
         [JsonIgnore]
-        public virtual Entities Entities { get; set; }
+        public Entities Entities { get; set; }
     }
     public class UserMention
     {
         [Key]
         [ForeignKey("Entities")]
         [JsonIgnore]
-        public long EntitiesId { get; set; }
+        public Guid EntitiesId { get; set; }
 
         [JsonProperty("id_str", NullValueHandling = NullValueHandling.Ignore)]
         public string Id { get; set; }
@@ -250,14 +264,14 @@ namespace Degree.Models
         public List<long> Indices { get; set; }
 
         [JsonIgnore]
-        public virtual Entities Entities { get; set; }
+        public Entities Entities { get; set; }
     }
     public class Hashtag
     {
         [Key]
         [ForeignKey("Entities")]
         [JsonIgnore]
-        public long EntitiesId { get; set; }
+        public Guid EntitiesId { get; set; }
         [JsonProperty("text", NullValueHandling = NullValueHandling.Ignore)]
         public string Text { get; set; }
 
@@ -265,7 +279,7 @@ namespace Degree.Models
         public List<long> Indices { get; set; }
 
         [JsonIgnore]
-        public virtual Entities Entities { get; set; } 
+        public Entities Entities { get; set; } 
     }
     public class Place
     {
@@ -290,7 +304,7 @@ namespace Degree.Models
         public string Url { get; set; }
 
         [JsonIgnore]
-        public virtual TweetRaw TweetRaw { get; set; }
+        public TweetRaw TweetRaw { get; set; }
         [ForeignKey("TweetRaw")]
         [JsonIgnore]
         public long TweetRawId {get;set;}
@@ -308,7 +322,7 @@ namespace Degree.Models
         [JsonProperty("type")]
         public string Type { get; set; }
         [JsonIgnore]
-        public virtual Place Place { get; set; }
+        public Place Place { get; set; }
     }
     public class Coordinates
     {
@@ -324,7 +338,7 @@ namespace Degree.Models
         public string Type { get; set; }
 
         [JsonIgnore]
-        public virtual TweetRaw TweetRaw{get;set;}
+        public TweetRaw TweetRaw{get;set;}
     }
     public class User
     {
@@ -376,7 +390,7 @@ namespace Degree.Models
 
 
         [JsonIgnore]
-        public virtual List<TweetRaw> TweetRaws { get; set; }
+        public List<TweetRaw> TweetRaws { get; set; }
 
     }
 }

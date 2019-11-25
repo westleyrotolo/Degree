@@ -18,6 +18,16 @@ namespace Degree.AppDbContext
                 return obj;
             }
         }
+        public static async Task<TweetRaw> InsertAsync(TweetRaw tweet)
+        {
+            using (var context = new AppDbContext())
+            {
+                // context.Entry(tweet).State = Microsoft.EntityFrameworkCore.EntityState.Added;
+                await context.AddAsync(tweet);
+                await context.SaveChangesAsync();
+                return tweet;
+            }
+        }
         public static IList<TweetRaw> Fetch()
         {
             using (var context = new AppDbContext())
