@@ -17,14 +17,18 @@ namespace Degree.AppDbContext
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<TweetRaw>().HasKey(x => x.Id);
-            
-            modelBuilder.Entity<BoundingBox>().HasNoKey();
-            modelBuilder.Entity<ExtendedTweet>().HasNoKey();
-            modelBuilder.Entity<Entities>().HasNoKey();
-            modelBuilder.Entity<Url>().HasNoKey();
-            modelBuilder.Entity<Media>().HasNoKey();
-            modelBuilder.Entity<Hashtag>().HasNoKey();
-            modelBuilder.Entity<Coordinates>().HasNoKey();
+
+            modelBuilder.Entity<TweetRaw>().HasOne(e => e.Entities)
+            .WithOne().HasForeignKey<TweetRaw>(x => x.EntitiesId);
+
+            modelBuilder.Entity<TweetRaw>().HasOne(e => e.ExtendedEntities)
+            .WithOne().HasForeignKey<TweetRaw>(x => x.ExtendedEntitiesId);
+
+            modelBuilder.Entity<TweetRaw>().HasOne(e => e.ExtendedEntities)
+            .WithOne(e => e.TweetRaw);
+
+            modelBuilder.Entity<TweetRaw>().HasOne(e => e.ExtendedTweet)
+            .WithOne(e => e.TweetRaw);
 
             modelBuilder.Entity<ExtendedTweet>()
                     .HasOne(x => x.Entities);

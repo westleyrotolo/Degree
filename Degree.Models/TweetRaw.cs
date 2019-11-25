@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 using Newtonsoft.Json;
 
@@ -63,8 +64,12 @@ namespace Degree.Models
         [JsonProperty("user")]
         public User User { get; set; }
 
+        [ForeignKey("User")]
+        [JsonIgnore]
+        public long UserId { get; set; }
+
         [JsonProperty("coordinates", NullValueHandling = NullValueHandling.Ignore)]
-        public Coordinates Coordinates { get; set; }
+        public Coordinates Coordinates { get; set; } 
 
         [JsonProperty("place", NullValueHandling = NullValueHandling.Ignore)]
         public Place Place { get; set; }
@@ -96,9 +101,13 @@ namespace Degree.Models
 
         [JsonProperty("entities")]
         public Entities Entities { get; set; }
+        [JsonIgnore]
+        public long EntitiesId { get; set;  }
 
         [JsonProperty("extended_entities")]
         public Entities ExtendedEntities { get; set; }
+        [JsonIgnore]
+        public long ExtendedEntitiesId { get; set; }
 
         [JsonProperty("extended_tweet", NullValueHandling = NullValueHandling.Ignore)]
         public ExtendedTweet ExtendedTweet { get; set; }
@@ -108,6 +117,11 @@ namespace Degree.Models
     }
     public class ExtendedTweet
     {
+        [JsonIgnore]
+        [Key]
+        [ForeignKey("ExtendedTweet")]
+        public long TweetRawId { get; set; }
+
         [JsonProperty("full_text", NullValueHandling = NullValueHandling.Ignore)]
         public string FullText { get; set; }
 
@@ -119,9 +133,16 @@ namespace Degree.Models
 
         [JsonProperty("extended_entities", NullValueHandling = NullValueHandling.Ignore)]
         public Entities ExtendedEntities { get; set; }
+
+        [JsonIgnore]
+        public virtual TweetRaw TweetRaw { get; set; }
     }
     public class Entities
     {
+        [Key]
+        [ForeignKey("TweetRaw")]
+        public long TweetRawId { get; set; }
+
         [JsonProperty("hashtags", NullValueHandling = NullValueHandling.Ignore)]
         public List<Hashtag> Hashtags { get; set; }
 
@@ -133,9 +154,39 @@ namespace Degree.Models
 
         [JsonProperty("media", NullValueHandling = NullValueHandling.Ignore)]
         public List<Media> Media { get; set; }
+
+        [JsonIgnore]
+        public virtual TweetRaw  TweetRaw { get; set; }
+    }
+    public class ExtendedEntities
+    {
+        [Key]
+        [ForeignKey("TweetRaw")]
+        public long TweetRawId { get; set; }
+
+        [JsonProperty("hashtags", NullValueHandling = NullValueHandling.Ignore)]
+        public List<Hashtag> Hashtags { get; set; }
+
+        [JsonProperty("urls", NullValueHandling = NullValueHandling.Ignore)]
+        public List<Url> Urls { get; set; }
+
+        [JsonProperty("user_mentions", NullValueHandling = NullValueHandling.Ignore)]
+        public List<UserMention> UserMentions { get; set; }
+
+        [JsonProperty("media", NullValueHandling = NullValueHandling.Ignore)]
+        public List<Media> Media { get; set; }
+
+        [JsonIgnore]
+        public virtual TweetRaw TweetRaw { get; set; }
     }
     public class Media
     {
+
+        [JsonIgnore]
+        [Key]
+        [ForeignKey("Entities")]
+        public long EntitiesId { get; set; }
+
         [JsonProperty("display_url")]
         public string DisplayUrl { get; set; }
 
@@ -150,9 +201,19 @@ namespace Degree.Models
 
         [JsonProperty("url")]
         public string Url { get; set; }
+
+        [JsonIgnore]
+        public virtual Entities Entities { get; set; }
     }
     public class Url
     {
+
+
+        [JsonIgnore]
+        [Key]
+        [ForeignKey("Entities")]
+        public long EntitiesId { get; set; }
+
         [JsonProperty("url", NullValueHandling = NullValueHandling.Ignore)]
         public string TweetUrl { get; set; }
 
@@ -164,10 +225,17 @@ namespace Degree.Models
 
         [JsonProperty("indices", NullValueHandling = NullValueHandling.Ignore)]
         public List<long> Indices { get; set; }
+
+        [JsonIgnore]
+        public virtual Entities Entities { get; set; }
     }
     public class UserMention
     {
         [Key]
+        [ForeignKey("Entities")]
+        [JsonIgnore]
+        public long EntitiesId { get; set; }
+
         [JsonProperty("id_str", NullValueHandling = NullValueHandling.Ignore)]
         public string Id { get; set; }
 
@@ -180,14 +248,24 @@ namespace Degree.Models
 
         [JsonProperty("indices", NullValueHandling = NullValueHandling.Ignore)]
         public List<long> Indices { get; set; }
+
+        [JsonIgnore]
+        public virtual Entities Entities { get; set; }
     }
     public class Hashtag
     {
+        [Key]
+        [ForeignKey("Entities")]
+        [JsonIgnore]
+        public long EntitiesId { get; set; }
         [JsonProperty("text", NullValueHandling = NullValueHandling.Ignore)]
         public string Text { get; set; }
 
         [JsonProperty("indices", NullValueHandling = NullValueHandling.Ignore)]
         public List<long> Indices { get; set; }
+
+        [JsonIgnore]
+        public virtual Entities Entities { get; set; } 
     }
     public class Place
     {
@@ -210,21 +288,43 @@ namespace Degree.Models
         public string PlaceType { get; set; }
         [JsonProperty("url")]
         public string Url { get; set; }
+
+        [JsonIgnore]
+        public virtual TweetRaw TweetRaw { get; set; }
+        [ForeignKey("TweetRaw")]
+        [JsonIgnore]
+        public long TweetRawId {get;set;}
     }
+
     public class BoundingBox
     {
+        [Key]
+        [ForeignKey("Place")]
+        [JsonIgnore]
+        public string PlaceId { get; set; }
+
         [JsonProperty("coordinates")]
         public List<List<List<double>>> Coordinates { get; set; }
         [JsonProperty("type")]
         public string Type { get; set; }
+        [JsonIgnore]
+        public virtual Place Place { get; set; }
     }
     public class Coordinates
     {
+        [Key]
+        [ForeignKey("TweetRaw")]
+        [JsonIgnore]
+        public long TweetRawId { get; set; }
+
         [JsonProperty("coordinates", NullValueHandling = NullValueHandling.Ignore)]
         public List<double> GeoCoordinates { get; set; }
 
         [JsonProperty("type", NullValueHandling = NullValueHandling.Ignore)]
         public string Type { get; set; }
+
+        [JsonIgnore]
+        public virtual TweetRaw TweetRaw{get;set;}
     }
     public class User
     {
@@ -273,6 +373,10 @@ namespace Degree.Models
 
         [JsonProperty("default_profile_image")]
         public bool default_profile_image { get; set; }
+
+
+        [JsonIgnore]
+        public virtual List<TweetRaw> TweetRaws { get; set; }
 
     }
 }
