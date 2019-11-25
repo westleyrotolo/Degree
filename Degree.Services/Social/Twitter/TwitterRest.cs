@@ -40,9 +40,9 @@ namespace Degree.Services.Social.Twitter
                             index++;
                             var json = JsonConvert.SerializeObject(tweetRequest);
                             var stringContent = new StringContent(json);
-                            //  var request = client.PostAsync(baseAddress, stringContent).Result;
-                            // var content = await request.Content.ReadAsStringAsync();
-                            var content = await FileHelper.ReadFile("file1.json");
+                            var request = client.PostAsync(baseAddress, stringContent).Result;
+                            var content = await request.Content.ReadAsStringAsync();
+                            //var content = await FileHelper.ReadFile("file1.json");
                             await FileHelper.WriteFile($"file{index}.json", content);
                             var result = JsonConvert.DeserializeObject<TweetResult>
                                                 (
