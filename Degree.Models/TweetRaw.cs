@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
-using Newtonsoft.Json;
 
 namespace Degree.Models
 {
@@ -74,7 +73,7 @@ namespace Degree.Models
         [JsonProperty("place", NullValueHandling = NullValueHandling.Ignore)]
         public Place Place { get; set; }
 
-        [JsonProperty("quoted_status_id")]
+        [JsonIgnore]
         public long? QuotedStatusId { get; set; }
 
         [JsonProperty("is_quote_status")]
@@ -83,6 +82,9 @@ namespace Degree.Models
         [JsonProperty("quoted_status", NullValueHandling = NullValueHandling.Ignore)]
         public TweetRaw QuotedStatus { get; set; }
 
+        [JsonIgnore]
+        public long? RetweetedStatusId { get; set; }
+        
         //Users can amplify the broadcast of Tweets authored by other users by retweeting . Retweets can be distinguished from typical Tweets by the existence of a retweeted_status attribute. This attribute contains a representation of the original Tweet that was retweeted
         [JsonProperty("retweeted_status", NullValueHandling = NullValueHandling.Ignore)]
         public TweetRaw RetweetedStatus { get; set; }
@@ -99,25 +101,12 @@ namespace Degree.Models
         [JsonProperty("favorite_count")]
         public long FavoriteCount { get; set; }
 
-        [JsonProperty("entities")]
-        public Entities Entities { get; set; }
-        [JsonIgnore]
-        [ForeignKey("Entities")]
-        public Guid? EntitiesId { get; set;  }
-
-        [JsonProperty("extended_entities")]
-        public Entities ExtendedEntities { get; set; }
-        [JsonIgnore]
-        [ForeignKey("ExtendedEntities")]
-        public Guid? ExtendedEntitiesId { get; set; }
 
         [JsonProperty("extended_tweet", NullValueHandling = NullValueHandling.Ignore)]
         public ExtendedTweet ExtendedTweet { get; set; }
 
         [JsonProperty("lang")]
         public string Lang { get; set; }
-        [JsonIgnore]
-        public List<Entities> _Entities { get; set; }
     }
     public class ExtendedTweet
     {
@@ -132,155 +121,10 @@ namespace Degree.Models
         [JsonProperty("display_text_range", NullValueHandling = NullValueHandling.Ignore)]
         public List<long> DisplayTextRange { get; set; }
 
-        [JsonProperty("entities", NullValueHandling = NullValueHandling.Ignore)]
-        public Entities Entities { get; set; }
-
-        [JsonProperty("extended_entities", NullValueHandling = NullValueHandling.Ignore)]
-        public Entities ExtendedEntities { get; set; }
-
         [JsonIgnore]
         public TweetRaw TweetRaw { get; set; }
     }
-    public class Entities
-    {
-        [Key]
-        [JsonIgnore]
-        public Guid EntitieId { get; set; }
-
-        [JsonIgnore]
-        [ForeignKey("TweetRaw")]
-        public long TweetRawId { get; set; }
-
-        [JsonIgnore]
-        [ForeignKey("ExtendedTweetRaw")]
-        public long ExtendedTweetRawId { get; set; }
-        [JsonProperty("hashtags", NullValueHandling = NullValueHandling.Ignore)]
-        public List<Hashtag> Hashtags { get; set; }
-
-        [JsonProperty("urls", NullValueHandling = NullValueHandling.Ignore)]
-        public List<Url> Urls { get; set; }
-
-        [JsonProperty("user_mentions", NullValueHandling = NullValueHandling.Ignore)]
-        public List<UserMention> UserMentions { get; set; }
-
-        [JsonProperty("media", NullValueHandling = NullValueHandling.Ignore)]
-        public List<Media> Media { get; set; }
-
-        [JsonIgnore]
-        public TweetRaw TweetRaw { get; set; }
-
-        [JsonIgnore]
-        public TweetRaw ExtendedTweetRaw { get; set; }
-    }
-    public class ExtendedEntities
-    {
-        [Key]
-        [ForeignKey("TweetRaw")]
-        public long TweetRawId { get; set; }
-
-        [JsonProperty("hashtags", NullValueHandling = NullValueHandling.Ignore)]
-        public List<Hashtag> Hashtags { get; set; }
-
-        [JsonProperty("urls", NullValueHandling = NullValueHandling.Ignore)]
-        public List<Url> Urls { get; set; }
-
-        [JsonProperty("user_mentions", NullValueHandling = NullValueHandling.Ignore)]
-        public List<UserMention> UserMentions { get; set; }
-
-        [JsonProperty("media", NullValueHandling = NullValueHandling.Ignore)]
-        public List<Media> Media { get; set; }
-
-        [JsonIgnore]
-        public TweetRaw TweetRaw { get; set; }
-    }
-    public class Media
-    {
-
-        [JsonIgnore]
-        [Key]
-        [ForeignKey("Entities")]
-        public Guid EntitiesId { get; set; }
-
-        [JsonProperty("display_url")]
-        public string DisplayUrl { get; set; }
-
-        [JsonProperty("extended_url")]
-        public string ExtendedUrl { get; set; }
-
-        [JsonProperty("media_url_https")]
-        public string MediaUrl { get; set; }
-
-        [JsonProperty("type")]
-        public string Type { get; set; }
-
-        [JsonProperty("url")]
-        public string Url { get; set; }
-
-        [JsonIgnore]
-        public Entities Entities { get; set; }
-    }
-    public class Url
-    {
-
-
-        [JsonIgnore]
-        [Key]
-        [ForeignKey("Entities")]
-        public Guid EntitiesId { get; set; }
-
-        [JsonProperty("url", NullValueHandling = NullValueHandling.Ignore)]
-        public string TweetUrl { get; set; }
-
-        [JsonProperty("expanded_url", NullValueHandling = NullValueHandling.Ignore)]
-        public Uri ExpandedUrl { get; set; }
-
-        [JsonProperty("display_url", NullValueHandling = NullValueHandling.Ignore)]
-        public string DisplayUrl { get; set; }
-
-        [JsonProperty("indices", NullValueHandling = NullValueHandling.Ignore)]
-        public List<long> Indices { get; set; }
-
-        [JsonIgnore]
-        public Entities Entities { get; set; }
-    }
-    public class UserMention
-    {
-        [Key]
-        [ForeignKey("Entities")]
-        [JsonIgnore]
-        public Guid EntitiesId { get; set; }
-
-        [JsonProperty("id_str", NullValueHandling = NullValueHandling.Ignore)]
-        public string Id { get; set; }
-
-        [JsonProperty("screen_name", NullValueHandling = NullValueHandling.Ignore)]
-        public string ScreenName { get; set; }
-
-        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
-        public string Name { get; set; }
-
-
-        [JsonProperty("indices", NullValueHandling = NullValueHandling.Ignore)]
-        public List<long> Indices { get; set; }
-
-        [JsonIgnore]
-        public Entities Entities { get; set; }
-    }
-    public class Hashtag
-    {
-        [Key]
-        [ForeignKey("Entities")]
-        [JsonIgnore]
-        public Guid EntitiesId { get; set; }
-        [JsonProperty("text", NullValueHandling = NullValueHandling.Ignore)]
-        public string Text { get; set; }
-
-        [JsonProperty("indices", NullValueHandling = NullValueHandling.Ignore)]
-        public List<long> Indices { get; set; }
-
-        [JsonIgnore]
-        public Entities Entities { get; set; } 
-    }
+    
     public class Place
     {
         [Key]

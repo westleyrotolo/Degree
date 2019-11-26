@@ -40,7 +40,7 @@ namespace Degree.Services.Social.Twitter
                             index++;
                             var json = JsonConvert.SerializeObject(tweetRequest);
                             var stringContent = new StringContent(json);
-                            var request = client.PostAsync(baseAddress, stringContent).Result;
+                           var request = client.PostAsync(baseAddress, stringContent).Result;
                             var content = await request.Content.ReadAsStringAsync();
                             //var content = await FileHelper.ReadFile("file1.json");
                             await FileHelper.WriteFile($"file{index}.json", content);
@@ -58,18 +58,10 @@ namespace Degree.Services.Social.Twitter
                             {
                                 if (x.QuotedStatusId == 0)
                                     x.QuotedStatusId = null;
-                                if (x.Entities != null)
-                                {
-                                    x.Entities = null;
-                                 //  x.Entities.EntitieId = Guid.NewGuid();
-                                 //  x.EntitiesId = x.Entities.EntitieId;
-                                }
-                                if (x.ExtendedEntities != null)
-                                {
-                                    x.ExtendedEntities = null;  
-                                   // x.ExtendedEntities.EntitieId = Guid.NewGuid();
-                                  //  x.ExtendedEntitiesId = x.ExtendedEntities.EntitieId;
-                                }
+                                if (x.RetweetedStatusId == 0)
+                                    x.RetweetedStatusId = null;
+                                if (x.ExtendedTweet != null)
+                                    x.ExtendedTweet.TweetRawId = x.Id;
                             });
                             tweets.AddRange(result.Results);
                         } while (!string.IsNullOrEmpty(tweetRequest.Next));

@@ -6,6 +6,7 @@ namespace Degree.AppDbContext
 {
     public class AppDbContext : DbContext
     {
+        
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
@@ -21,28 +22,26 @@ namespace Degree.AppDbContext
             modelBuilder.Entity<TweetRaw>().HasKey(x => x.Id);
 
             modelBuilder.Entity<TweetRaw>()
-            .HasMany(e => e._Entities)
-            .WithOne();
-
-            
-            modelBuilder.Entity<Entities>()
-            .HasOne(e => e.ExtendedTweetRaw)
-            .WithOne(e => e.ExtendedEntities)
-            .HasForeignKey<TweetRaw>(x => x.ExtendedEntitiesId);
-
-
-            modelBuilder.Entity<Entities>()
-            .HasOne(e => e.TweetRaw)
-            .WithOne(e => e.Entities)
-            .HasForeignKey<TweetRaw>(x => x.EntitiesId);
-
-    
-            modelBuilder.Entity<TweetRaw>()
             .HasOne(e => e.ExtendedTweet)
             .WithOne(e => e.TweetRaw);
+                                
 
-            modelBuilder.Entity<ExtendedTweet>()
-            .HasOne(x => x.Entities);
+            modelBuilder.Entity<TweetRaw>()
+            .HasOne(e => e.QuotedStatus)
+            .WithOne();
+
+            modelBuilder.Entity<TweetRaw>()
+            .HasOne(e => e.RetweetedStatus)
+            .WithOne();
+
+            modelBuilder.Entity<TweetRaw>()
+            .HasOne(x => x.ExtendedTweet)
+            .WithOne(x => x.TweetRaw);
+
+            modelBuilder.Entity<Place>()
+            .HasOne(x => x.BoundingBox)
+            .WithOne(x => x.Place);
+
             modelBuilder.Entity<BoundingBox>()
             .Property(e => e.Coordinates)
             .HasConversion(
@@ -52,27 +51,6 @@ namespace Degree.AppDbContext
 
             modelBuilder.Entity<ExtendedTweet>()
             .Property(e => e.DisplayTextRange)
-            .HasConversion(
-                v => string.Join(";", v),
-                v => new List<long>(Split(v).Select(x => long.Parse(x)))
-            );
-
-            modelBuilder.Entity<Url>()
-            .Property(e => e.Indices)
-            .HasConversion(
-                v => string.Join(";",v),
-                v => new List<long>(Split(v).Select(x => long.Parse(x)))
-            );
-
-            modelBuilder.Entity<UserMention>()
-            .Property(e => e.Indices)
-            .HasConversion(
-                v => string.Join(";", v),
-                v => new List<long>(Split(v).Select(x => long.Parse(x)))
-            );
-
-            modelBuilder.Entity<Hashtag>()
-            .Property(e => e.Indices)
             .HasConversion(
                 v => string.Join(";", v),
                 v => new List<long>(Split(v).Select(x => long.Parse(x)))
@@ -96,11 +74,6 @@ namespace Degree.AppDbContext
         public DbSet<TweetRaw> TweetsRaw { get; set; }
         
         public DbSet<ExtendedTweet> ExtendedTweets { get; set; }
-        public DbSet<Entities> Entities { get; set; }
-        public DbSet<Media> Medias { get; set; }
-        public DbSet<Url> Urls { get; set; }
-        public DbSet<UserMention> UserMentions {get;set;}
-        public DbSet<Hashtag> Hashtags { get; set; }
         public DbSet<Place> Places { get; set; }
         public DbSet<BoundingBox> BoundingBoxes { get; set; }
         public DbSet<Coordinates> Coordinates { get; set; }
