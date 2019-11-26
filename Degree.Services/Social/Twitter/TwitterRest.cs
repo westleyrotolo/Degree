@@ -32,12 +32,14 @@ namespace Degree.Services.Social.Twitter
                         tweetRequest.Query = TweetRequest
                         .QueryBuilder
                         .InitQuery()
-                        .From("wesrotolo")
+                        .Hashtag("#Sardine")
                         .Build();
                         int index = 0;
                         do
                         {
                             index++;
+                            if (index == 2)
+                                break;
                             var json = JsonConvert.SerializeObject(tweetRequest);
                             var stringContent = new StringContent(json);
                            var request = client.PostAsync(baseAddress, stringContent).Result;

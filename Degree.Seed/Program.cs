@@ -39,7 +39,7 @@ namespace Degree.Seed
                         foreach (var tweet in tweets)
                         {
                             await AppDbContext.AppDbHelper<TweetRaw>.InsertOrUpdateAsync(tweet);
-                     
+
                         }
 
                     }
@@ -51,10 +51,12 @@ namespace Degree.Seed
                 }
                 else if (response.Equals("3"))
                 {
-                    var auth =await TwitterAuthorize.AccessToken();
+                    var auth = await TwitterAuthorize.AccessToken();
                     var tweets = await TwitterRest.GetTweets(auth);
+                    int index = 1;
                     foreach (var t in tweets)
                     {
+                        Console.WriteLine($"{index++}. Insert tweet {t.Id}, of {t.User.ScreenName}");
                         await AppDbContext.AppDbHelper<TweetRaw>.InsertAsync(t);
                     }
                 }
