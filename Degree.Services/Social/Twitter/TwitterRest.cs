@@ -13,11 +13,16 @@ namespace Degree.Services.Social.Twitter
 {
     public class TwitterRest
     {
-        public static async Task<List<TweetRaw>> GetTweets(TokenAuth auth)
+        public static async Task DownloadWCFTweets()
+        {
+            var auth = await TwitterAuthorize.AccessToken();
+            await GetTweets(auth, WCFTweetRequest);
+        }
+
+        private static async Task GetTweets(TokenAuth auth, TweetRequest tweetRequest)
         {
             try
             {
-                var tweets = new List<TweetRaw>();
                 using (var handler = new HttpClientHandler())
                 {
                     handler.ServerCertificateCustomValidationCallback =
@@ -28,24 +33,16 @@ namespace Degree.Services.Social.Twitter
                         string baseAddress = "https://api.twitter.com/1.1/tweets/search/30day/analysis.json";
 
                         client.DefaultRequestHeaders.Add("Authorization", $"Bearer  {auth.AccessToken}");
-                        var tweetRequest = new TweetRequest();
-                        tweetRequest.Query = TweetRequest
-                        .QueryBuilder
-                        .InitQuery()
-                        .Hashtag("#Sardine")
-                        .Build();
-                        int index = 0;
+                      
+                        int index = 1;
                         do
                         {
-                            index++;
-                            if (index == 2)
-                                break;
+                            Console.WriteLine($"Page: {index++}");
                             var json = JsonConvert.SerializeObject(tweetRequest);
                             var stringContent = new StringContent(json);
-                           var request = client.PostAsync(baseAddress, stringContent).Result;
+                            var request = client.PostAsync(baseAddress, stringContent).Result;
                             var content = await request.Content.ReadAsStringAsync();
-                            //var content = await FileHelper.ReadFile("file1.json");
-                            await FileHelper.WriteFile($"file{index}.json", content);
+                            await FileHelper.WriteFile($"wcf-{index}.json", content);
                             var result = JsonConvert.DeserializeObject<TweetResult>
                                                 (
                                                     content,
@@ -55,9 +52,11 @@ namespace Degree.Services.Social.Twitter
                                                         Culture = new System.Globalization.CultureInfo("en-US")
                                                     }
                                                 );
+                            Console.WriteLine($"Found: {result.Results.Count}");
                             tweetRequest.Next = result.Next;
                             result.Results.ForEach(x =>
                             {
+                                // Normalize ID, for store.
                                 if (x.QuotedStatusId == 0)
                                     x.QuotedStatusId = null;
                                 if (x.RetweetedStatusId == 0)
@@ -65,18 +64,67 @@ namespace Degree.Services.Social.Twitter
                                 if (x.ExtendedTweet != null)
                                     x.ExtendedTweet.TweetRawId = x.Id;
                             });
-                            tweets.AddRange(result.Results);
                         } while (!string.IsNullOrEmpty(tweetRequest.Next));
-                        return tweets;
                     }
                 }
             }
             catch (Exception ex)
             {
                 var message = ex.Message;
-                return null;
             }
 
+
+        }
+
+        private static TweetRequest WCFTweetRequest 
+        {
+            get
+            {
+                var tweetRequest = new TweetRequest();
+                tweetRequest.MaxResults = 500;
+                tweetRequest.AddFromDate(new DateTime(2019, 3, 29, 0, 0, 0));
+                tweetRequest.AddToDate(new DateTime(2019, 3, 31, 23, 59, 59));
+                tweetRequest.Query = TweetRequest
+                .QueryBuilder
+                .InitQuery()
+                .Hashtag("#Adozionigay")
+                .Or()
+                .Hashtag("#Prolgbt")
+                .Or()
+                .Hashtag("#Famigliatradizionale")
+                .Or()
+                .Hashtag("#cirinnà")
+                .Or()
+                .Hashtag("famigliaarcobaleno")
+                .Or()
+                .Hashtag("#Congressodellefamiglie")
+                .Or()
+                .Hashtag("#Congressomondialedellefamiglie")
+                .Or()
+                .Hashtag("#WCFVerona")
+                .Or()
+                .Hashtag("#NoWCFVerona")
+                .Or()
+                .Hashtag("#No194")
+                .Or()
+                .Hashtag("#noeutonasia")
+                .Or()
+                .Hashtag("#uteroinaffitto")
+                .Or()
+                .Hashtag("#NoDDLPillon")
+                .Or()
+                .Hashtag("#Pillon")
+                .Or()
+                .Hashtag("#Pilloff")
+                .Or()
+                .Hashtag("#Spadafora")
+                .Or()
+                .Hashtag("#Affidocondiviso")
+                .Or()
+                .Hashtag("#Affidoparitario")
+                .Build();
+                return tweetRequest;
+            }
 
         }
     }

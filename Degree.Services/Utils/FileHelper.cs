@@ -18,10 +18,17 @@ namespace Degree.Services.Utils
 
         public static async Task<string> ReadFile(string filePath)
         {
-            using (StreamReader readtext = new StreamReader(filePath))
+            try
             {
-                var text = await readtext.ReadToEndAsync();
-                return text;
+                using (StreamReader readtext = new StreamReader(filePath))
+                {
+                    var text = await readtext.ReadToEndAsync();
+                    return text;
+                }
+            }
+            catch (Exception ex)
+            {
+                return string.Empty;
             }
         }
     }

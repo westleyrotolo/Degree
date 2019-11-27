@@ -83,6 +83,13 @@ namespace Degree.Models
         public TweetRaw QuotedStatus { get; set; }
 
         [JsonIgnore]
+        public bool IsRetweetStatus { get; set; }
+
+
+
+
+
+        [JsonIgnore]
         public long? RetweetedStatusId { get; set; }
         
         //Users can amplify the broadcast of Tweets authored by other users by retweeting . Retweets can be distinguished from typical Tweets by the existence of a retweeted_status attribute. This attribute contains a representation of the original Tweet that was retweeted

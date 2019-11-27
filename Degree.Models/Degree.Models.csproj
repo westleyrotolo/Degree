@@ -9,4 +9,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Twitter\" />
+  </ItemGroup>
 </Project>

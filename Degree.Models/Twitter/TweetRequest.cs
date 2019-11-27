@@ -28,7 +28,12 @@ namespace Degree.Models
         [JsonProperty("toDate", NullValueHandling = NullValueHandling.Ignore)]
         public string ToDate => toDate == default(DateTime) ? null : toDate.ToString(DATEFORMAT);
 
+        [JsonProperty("maxResults")]
+        public int MaxResults { get; set; }
+
+
         private DateTime toDate;
+        
 
         public void AddFromDate(DateTime date)
         {

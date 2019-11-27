@@ -11,4 +11,9 @@
   <ItemGroup>
     <ProjectReference Include="..\Degree.Models\Degree.Models.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="TextAnalysis\" />
+    <Folder Include="TextAnalysis\Azure\" />
+    <Folder Include="TextAnalysis\Azure\Models\" />
+  </ItemGroup>
 </Project>

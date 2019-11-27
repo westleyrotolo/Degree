@@ -10,9 +10,6 @@ namespace Degree.Services.Social.Twitter
 {
     public class TwitterApi
     {
-        public TwitterApi()
-        {
-        }
         private static void Login()
         {
             Auth.SetCredentials(TwitterAuthorize.TweetinviCredentials());
@@ -25,7 +22,7 @@ namespace Degree.Services.Social.Twitter
             TweetinviConfig.CurrentThreadSettings.TweetMode = TweetMode.Extended;
             ITweet t;
             
-              var tweet = Tweet.GetTweet(id);
+            var tweet = Tweet.GetTweet(id);
             var extended = tweet.ExtendedTweet;
             return tweet;
          }
