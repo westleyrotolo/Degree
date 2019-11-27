@@ -19,7 +19,8 @@ namespace Degree.Services.TextAnalysis.Azure.Models
 
     public class TextAnalyticsBatchInput
     {
-        public IList<TextAnalyticsInput> Documents { get; set; }
+        [JsonProperty("documents")]
+        public List<TextAnalyticsInput> Documents { get; set; } = new List<TextAnalyticsInput>();
     }
 
     public class TextAnalyticsInput
@@ -27,16 +28,19 @@ namespace Degree.Services.TextAnalysis.Azure.Models
         /// <summary>
         /// A unique, non-empty document identifier.
         /// </summary>
+        [JsonProperty("id")]
         public string Id { get; set; }
 
         /// <summary>
         /// The input text to process.
         /// </summary>
+        [JsonProperty("text")]
         public string Text { get; set; }
 
         /// <summary>
         /// The language code. Default is english ("it").
         /// </summary>
+        [JsonProperty("language")]
         public string LanguageCode { get; set; } = "it";
     }
     public class DocumentSentiment

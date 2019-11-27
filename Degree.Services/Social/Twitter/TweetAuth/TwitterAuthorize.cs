@@ -13,12 +13,10 @@ namespace Degree.Services.Social.Twitter.TweetAuth
         private const string GRANT_TYPE = "client_credentials";
         public static ITwitterCredentials TweetinviCredentials()
         {
-            LoadKey();
-            return new TwitterCredentials(CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET);
+            return new TwitterCredentials(Keys.Twitter.CONSUMER_KEY, Keys.Twitter.CONSUMER_SECRET, Keys.Twitter.ACCESS_TOKEN, Keys.Twitter.ACCESS_TOKEN_SECRET);
         }
         public static async Task<TokenAuth> AccessToken()
         {
-            LoadKey();
             TokenAuth auth;
             using (var handler = new HttpClientHandler())
             {
@@ -31,7 +29,7 @@ namespace Degree.Services.Social.Twitter.TweetAuth
 
 
                     string grant_type = GRANT_TYPE;
-                    string encoded = System.Convert.ToBase64String(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(CONSUMER_KEY + ":" + CONSUMER_SECRET));
+                    string encoded = System.Convert.ToBase64String(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(Keys.Twitter.CONSUMER_KEY + ":" + Keys.Twitter.CONSUMER_SECRET));
                     client.DefaultRequestHeaders.Add("Authorization", $"Basic {encoded}");
                     var form = new Dictionary<string, string>
                 {

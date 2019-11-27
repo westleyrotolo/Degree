@@ -1,5 +1,6 @@
 ﻿using Degree.Models;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 namespace Degree.AppDbContext
@@ -13,13 +14,15 @@ namespace Degree.AppDbContext
             
             if (optionsBuilder != null)
             {
-                optionsBuilder.EnableSensitiveDataLogging(true);
+                optionsBuilder.EnableSensitiveDataLogging(true); 
                 optionsBuilder.UseMySql("Server=degree.mysql.database.azure.com; Port=3306; Database=degree; Uid=westley@degree; Pwd=Sentiment2019.; SslMode=Preferred;");
             }
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<TweetRaw>().HasKey(x => x.Id);
+            modelBuilder.Entity<TweetSentiment>().HasKey(x => x.TweetRawId);
+
 
             modelBuilder.Entity<TweetRaw>()
             .HasOne(e => e.ExtendedTweet)
@@ -42,11 +45,36 @@ namespace Degree.AppDbContext
             .HasOne(x => x.BoundingBox)
             .WithOne(x => x.Place);
 
+            modelBuilder.Entity<TweetSentiment>()
+            .HasMany(x => x.Sentences)
+            .WithOne(x => x.TweetsSentiment)
+            .HasForeignKey(x => x.TweetSentimentId)
+            .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<BoundingBox>()
             .Property(e => e.Coordinates)
             .HasConversion(
                 v => string.Join(";", v.First().First()),
                 v => new List<List<List<double>>>() { new List<List<double>>() { new List<double>(Split(v).Select(x => double.Parse(x))) } }
+            );
+            modelBuilder.Entity<TweetSentenceSentiment>()
+            .Property(e => e.Warnings)
+            .HasConversion(
+                v => string.Join(";", v),
+                v => Split(v)
+            );
+            modelBuilder.Entity<TweetSentiment>()
+            .Property(e => e.Sentiment)
+            .HasConversion(
+                v => v.ToString(),
+                v => Enum.Parse<DocumentSentimentLabel>(v)
+            );
+
+            modelBuilder.Entity<TweetSentenceSentiment>()
+            .Property(e => e.Sentiment)
+            .HasConversion(
+                v => v.ToString(),
+                v => Enum.Parse<SentenceSentimentLabel>(v)
             );
 
             modelBuilder.Entity<ExtendedTweet>()
@@ -55,6 +83,8 @@ namespace Degree.AppDbContext
                 v => string.Join(";", v),
                 v => new List<long>(Split(v).Select(x => long.Parse(x)))
             );
+
+        
 
             modelBuilder.Entity<Coordinates>()
             .Property(e => e.GeoCoordinates)
@@ -78,6 +108,8 @@ namespace Degree.AppDbContext
         public DbSet<BoundingBox> BoundingBoxes { get; set; }
         public DbSet<Coordinates> Coordinates { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<TweetSentiment> TweetsSentiment { get; set; }
+        public DbSet<TweetSentenceSentiment> SentenceSentiments { get; set; }
         
     }
 }

@@ -6,13 +6,13 @@ namespace Degree.Services
     public static class Keys
     {
 
-        private static void LoadKey()
+        public static void LoadKey()
         {
             var root = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.Parent.FullName;
             var path = Path.Combine(root, "config.txt");
             string text = File.ReadAllText(path);
             var properties = text.Replace("\r", "").Split("\n")
-            .ToDictionary(k => k.Split(":")[0], v => v.Split(":")[1]);
+            .ToDictionary(k => k.Split(":")[0], v => v.Substring(v.IndexOf(v.Split(":")[1])));
 
             Twitter.CONSUMER_KEY = properties[nameof(Twitter.CONSUMER_KEY)];
             Twitter.CONSUMER_SECRET = properties[nameof(Twitter.CONSUMER_SECRET)];

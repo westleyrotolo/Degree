@@ -11,7 +11,7 @@ namespace Degree.AppDbContext
     public static class AppDbHelper<T> where T : class
     {
 
-        public static async Task<T> InsertOrUpdateAsync(T obj)
+        public static async Task<T> InsertOrUpdateTweetAsync(T obj)
         {
             using (var context = new AppDbContext())
             {
@@ -75,79 +75,59 @@ namespace Degree.AppDbContext
                 return obj;
             }
         }
-        public static async Task<TweetRaw> InsertAsync(TweetRaw tweet)
-        {
-            try
-            {
-
-                using (var context = new AppDbContext())
-                {
-
-                    if (tweet.User != null)
-                        if (context.Users.Any(x => x.Id == tweet.User.Id))
-                        {
-                            context.Entry(tweet.User).State = EntityState.Modified;
-                        }
-                        else
-                        {
-                            context.Entry(tweet.User).State = EntityState.Added;
-                        }
-
-                    if (tweet.QuotedStatus != null)
-                    {
-                        await InsertAsync(tweet.QuotedStatus);
-                    }
-                    if (tweet.RetweetedStatus != null)
-                    {
-                        await InsertAsync(tweet.RetweetedStatus);
-                    }
-                    if (context.TweetsRaw.Any(x => x.Id == tweet.Id))
-                    {
-                        context.Entry(tweet).State = EntityState.Modified;
-                    }
-                    else
-                    {
-                        context.Entry(tweet).State = EntityState.Added;
-                    }
-                    if (tweet.ExtendedTweet != null)
-                    {
-                        if (context.ExtendedTweets.Any(x => x.TweetRawId == tweet.Id))
-                        {
-                            context.Remove(tweet.ExtendedTweet);
-                            context.Entry(tweet.ExtendedTweet).State = EntityState.Deleted;
-                            await context.SaveChangesAsync();
-                        }
-                        else
-                        {
-                            context.Entry(tweet.ExtendedTweet).State = EntityState.Added;
-                        }
-
-                    }
-                    await context.TweetsRaw.AddOrUpdate<TweetRaw>(tweet);
-                    await context.SaveChangesAsync();
-                    context.Entry(tweet).State = EntityState.Detached;
-                    context.Entry(tweet.User).State = EntityState.Detached;
-                    if (tweet.ExtendedTweet != null)
-                        context.Entry(tweet.ExtendedTweet).State = EntityState.Detached;
-                    return tweet;
-
-                }
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-
-        }
-        public static IList<TweetRaw> Fetch()
+    
+        public static async Task<TweetSentiment> InsertOrUpdateSentimentAsync(TweetSentiment tweetSentiment)
         {
             using (var context = new AppDbContext())
             {
-                var items = context.TweetsRaw.Take(10).ToList();
+                if (context.TweetsSentiment.Count(x => x.TweetRawId == tweetSentiment.TweetRawId) > 0)
+                {
+                    context.Remove(tweetSentiment);
+                    await context.SaveChangesAsync();
+                    /*
+                    var s = context.SentenceSentiments.Where(x => x.TweetSentimentId == tweetSentiment.TweetRawId).ToList();
+                    if (s.Count() > 0)
+                    {
+                        context.RemoveRange(s);
+                    }
+                    await context.SaveChangesAsync();
+                    context.Update(tweetSentiment);
+                    await context.SaveChangesAsync();
+                    foreach (var sentence in tweetSentiment.Sentences)
+                    {
+                        await context.AddAsync(sentence);
+                    }
+                    */
+                    await context.AddAsync(tweetSentiment);
+                    await context.SaveChangesAsync();
+                }
+                else
+                {
+
+                    await context.AddAsync(tweetSentiment);
+                    await context.SaveChangesAsync();
+                }
+
+                return tweetSentiment;
+            }
+
+        }
+        public static List<TweetRaw> Fetch()
+        {
+            using (var context = new AppDbContext())
+            {
+                var items = context.TweetsRaw.ToList();
                 return items;
             }
         }
-
+        public static List<TweetRaw> FetchNotRetweeted()
+        {
+            using (var context = new AppDbContext())
+            {
+                var items = context.TweetsRaw.Where(t => !t.IsRetweetStatus).ToList();
+                return items;
+            }
+        }
 
         public static async Task AddTweet(TweetRaw t)
         {
@@ -157,7 +137,7 @@ namespace Degree.AppDbContext
                 if (t.User != null)
                 {
                     t.UserId = t.User.Id;
-                    await AppDbHelper<User>.InsertOrUpdateAsync(t.User);
+                    await AppDbHelper<User>.InsertOrUpdateTweetAsync(t.User);
                 }
                 if (t.QuotedStatus != null)
                 {
@@ -168,21 +148,21 @@ namespace Degree.AppDbContext
                     await AddTweet(t.RetweetedStatus);
                 }
 
-                await AppDbHelper<TweetRaw>.InsertOrUpdateAsync(t);
+                await AppDbHelper<TweetRaw>.InsertOrUpdateTweetAsync(t);
 
                 if (t.ExtendedTweet != null)
                 {
                     t.ExtendedTweet.TweetRawId = t.Id;
-                    await AppDbHelper<ExtendedTweet>.InsertOrUpdateAsync(t.ExtendedTweet);
+                    await AppDbHelper<ExtendedTweet>.InsertOrUpdateTweetAsync(t.ExtendedTweet);
                 }
                 if (t.Place != null)
                 {
                     t.Place.TweetRawId = t.Id;
-                    await AppDbHelper<Place>.InsertOrUpdateAsync(t.Place);
+                    await AppDbHelper<Place>.InsertOrUpdateTweetAsync(t.Place);
                     if (t.Place.BoundingBox != null)
                     {
                         t.Place.BoundingBox.PlaceId = t.Place.Id;
-                        await AppDbHelper<BoundingBox>.InsertOrUpdateAsync(t.Place.BoundingBox);
+                        await AppDbHelper<BoundingBox>.InsertOrUpdateTweetAsync(t.Place.BoundingBox);
                     }
                 }
 

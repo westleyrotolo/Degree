@@ -11,6 +11,9 @@ using Degree.Services.Social.Twitter;
 using Degree.Services.Utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Degree.AppDbContext;
+using Degree.Services.TextAnalysis.Azure;
+using Degree.Services;
 
 namespace Degree.Seed
 {
@@ -18,6 +21,7 @@ namespace Degree.Seed
     {
         static async Task Main(string[] args)
         {
+            Keys.LoadKey();
             string response = "";
             do
             {
@@ -25,6 +29,7 @@ namespace Degree.Seed
                 Console.WriteLine("(S)tore Tweets in DB from files");
                 Console.WriteLine("(G)et sentiment from Tweets");
                 Console.Write("Inserisci comando: ");
+                response = Console.ReadKey().KeyChar.ToString();
                 if (response.Equals("d", StringComparison.InvariantCultureIgnoreCase))
                 {
 
@@ -40,6 +45,17 @@ namespace Degree.Seed
                    
                     Console.WriteLine("Finish.");
                     
+                }
+                else if (response.Equals("g", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    var tweets = AppDbHelper<TweetRaw>.FetchNotRetweeted();
+                    var sentiments =await AzureSentiment.AnalyzeTweetSentiment(tweets);
+                    foreach (var s in sentiments.Select((s, i) => new { tweet=s, index=i }))
+                    {
+                        Console.WriteLine($"{s.index}. TwId:{s.tweet.TweetRawId}, Sentiment:{s.tweet.Sentiment.ToString()}");
+                        await AppDbHelper<TweetSentiment>.InsertOrUpdateSentimentAsync(s.tweet);
+                    }
+                    Console.WriteLine("Finish");
                 }
 
             } while (!response.Equals("0"));
