@@ -1,12 +1,28 @@
 <mat-card class="example-card">
-    <mat-card-header>
-    <div mat-card-avatar [style.background-image]='profilePic' ></div>
-      <mat-card-title>{{tweet.userName}}</mat-card-title>
-      <mat-card-subtitle>{{tweet.userScreenName}}</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
-      <p>
-          {{tweet.text}}
-      </p>
-    </mat-card-content>
-  </mat-card>
+  <mat-card-header>
+    <div mat-card-avatar [style.background-image]='profilePic'></div>
+    <mat-card-title>{{tweet.userName}}</mat-card-title>
+    <mat-card-subtitle>{{tweet.userScreenName}}</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <p>
+      {{tweet.text}}
+    </p>
+  </mat-card-content>
+  <mat-card-footer>
+    <div class="row justify-content-center px-3 py-2">
+      <div class="col-4">
+        <app-pie-sentiment [label]="'Positive'" [percent]="tweet.positiveScore"></app-pie-sentiment>
+      </div>
+      <div class="col-4">
+        <app-pie-sentiment [label]="'Neutral'" [percent]="tweet.neutralScore"></app-pie-sentiment>
+      </div>
+      <div class="col-4">
+        <app-pie-sentiment [label]="'Negative'" [percent]="tweet.negativeScore"></app-pie-sentiment>
+      </div>
+    </div>
+    <div [className]="sentimentClass">
+      {{tweet.sentiment}}
+    </div>
+  </mat-card-footer>
+</mat-card>

@@ -9,14 +9,27 @@ import { Tweet } from 'src/models/tweet';
 export class TweetCardComponent implements OnInit {
 
   @Input()
-  tweet: Tweet;
+  tweet: any;
   profilePic: string;
+  sentimentClass: string;
   constructor() { }
  
   ngOnInit() {
     console.log("tweet: " ,this.tweet);
-    this.profilePic = `url(${this.tweet.UserProfileImage})`;
+    this.profilePic = `url(${this.tweet.userProfileImage})`;
     console.log("profilePic: ", this.profilePic);
+    this.SetSentimentClass();
   }
 
+  SetSentimentClass() {
+    if (this.tweet.sentiment === 'Positive') {
+      this.sentimentClass = 'alert alert-success'
+    } else if (this.tweet.sentiment === 'Negative') {
+      this.sentimentClass = 'alert alert-danger';
+    } else if (this.tweet.sentiment === 'Neutral') {
+      this.sentimentClass = 'alert alert-secondary';
+    } else if (this.tweet.sentiment === 'Mixed') {
+      this.sentimentClass = 'alert alert-info';
+    }
+  }
 }

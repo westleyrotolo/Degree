@@ -16,7 +16,11 @@ namespace Degree.WebApi.Controllers
     [Route("[controller]")]
     public class TweetApiController : ControllerBase
     {
-
+        [HttpGet("")]
+        public string Test()
+        {
+            return "Test";
+        }
         [HttpPost("Search")]
         public IEnumerable<TweetDto> TweetsByHashtags([FromBody]ApiRequest apiRequest)
         {

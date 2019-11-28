@@ -34,3 +34,9 @@ export interface SentimentSentence{
     Offset:number
     Length:number
 }
+export enum Sentiment {
+    Positive = 'Positive',
+    Negative = 'Negative',
+    Neutral = 'Neutral',
+    Mixed = 'Mixed'
+}
