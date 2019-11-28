@@ -85,20 +85,6 @@ namespace Degree.AppDbContext
                 {
                     context.Remove(tweetSentiment);
                     await context.SaveChangesAsync();
-                    /*
-                    var s = context.SentenceSentiments.Where(x => x.TweetSentimentId == tweetSentiment.TweetRawId).ToList();
-                    if (s.Count() > 0)
-                    {
-                        context.RemoveRange(s);
-                    }
-                    await context.SaveChangesAsync();
-                    context.Update(tweetSentiment);
-                    await context.SaveChangesAsync();
-                    foreach (var sentence in tweetSentiment.Sentences)
-                    {
-                        await context.AddAsync(sentence);
-                    }
-                    */
                     await context.AddAsync(tweetSentiment);
                     await context.SaveChangesAsync();
                 }
@@ -142,6 +128,7 @@ namespace Degree.AppDbContext
                 var query = $"SELECT * FROM tweetsraw as t WHERE ({or}) AND t.IsRetweetStatus = false";
                 var items = context.TweetsRaw
                 .FromSqlRaw(query)
+                .OrderByDescending(x=>x.CreatedAt)
                 .Skip(page * itemPerPage)
                 .Take(itemPerPage)
                 .Include(x => x.User)

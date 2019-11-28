@@ -15,7 +15,7 @@
     "@angular/cdk": "~8.2.3",
     "@angular/common": "~8.2.14",
     "@angular/compiler": "~8.2.14",
-    "@angular/core": "~8.2.14",
+    "@angular/core": "^8.2.14",
     "@angular/forms": "~8.2.14",
     "@angular/http": "^7.2.15",
     "@angular/material": "^8.2.3",
@@ -28,7 +28,7 @@
     "ng-circle-progress": "^1.5.1",
     "ngx-masonry": "^1.1.4",
     "popper": "^1.0.1",
-    "rxjs": "^6.4.0",
+    "rxjs": "^6.5.3",
     "rxjs-compat": "^6.5.3",
     "tslib": "^1.10.0",
     "zone.js": "~0.9.1"

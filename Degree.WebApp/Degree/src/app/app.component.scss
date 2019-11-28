@@ -25,16 +25,42 @@
       margin-left: auto;
       margin-right: auto;
   }
-.mat-chip.mat-standard-chip {
-    background-color: #00acee;
-    color: white;
+  
+.mat-chip-active {
+    background-color: #00acee!important;
+    color: white!important;
     cursor: pointer!important;
 }
-.mat-chip.mat-standard-chip-disabled {
-    background-color: #b6b6b6;
-    color: black;
+.mat-chip-inactive {
+    background-color: #c4c4c4!important;
+    color: black!important;
     cursor: pointer!important;
 }
 ::ng-deep .mat-chip-list-wrapper {
     justify-content: center!important;
+}
+.button-search {
+    display: flex;
+    margin-left: 0;
+    justify-content: center;
+    margin-right: auto;
+    margin-left: auto;
+    margin-top: 30px;
+    margin-bottom: -40px;
+    padding-left: 30px;
+    padding-right: 30px;
+}
+#btnSearch.btn-primary {
+    background-color: #00acee!important;
+    border-color: #00acee!important;
+}
+.wrapper-load {
+    position: relative;
+    top:100%;
+    text-align: center;
+    padding: 18px;
+}
+.button-load {
+    display: inline-block;
+    
 }

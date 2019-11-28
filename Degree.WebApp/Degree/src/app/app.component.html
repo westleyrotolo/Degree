@@ -2,17 +2,23 @@
     <div class="container-hashtags shadow p-3 mb-5 bg-white rounded">
         <div class="hashtags m-6">
             <mat-chip-list >
-                    <mat-chip *ngFor="let h of hashtags"    (click)="toggleHashtag(h)">{{h.hashtag}}</mat-chip>
+                    <mat-chip [className]="h.isActive ? 'mat-chip mat-primary mat-standard-chip mat-chip-active' : 'mat-chip mat-primary mat-standard-chip mat-chip-inactive'" *ngFor="let h of hashtags"  (click)="toggleHashtag(h)">
+                        <span >{{h.hashtag}}</span>
+                    </mat-chip>
             </mat-chip-list>
+            <button id="btnSearch" type="button" class="btn btn-primary button-search" (click)="resetRequest()" >Search</button>
         </div>
     </div>
     <div class="container-tweets">
         
-    <ngx-masonry class="tweets" [options]="myOptions" >
+    <ngx-masonry style="margin:0, auto; min-height: 100%;" [updateLayout]="updateMasonryLayout" class="tweets" [options]="myOptions" >
         <div ngxMasonryItem class="masonry-item m-6 " *ngFor="let t of tweets" ngxMasonryItem>
             <app-tweet-card  [tweet]="t"></app-tweet-card>
         </div>
     </ngx-masonry>
+<div class="wrapper-load">
+    <button type="button" class="btn btn-secondary button-load" (click)="loadMore()">Load more</button>
+</div>
     </div>
 </div>
-<router-outlet></router-outlet>
+<ng4-loading-spinner> </ng4-loading-spinner>

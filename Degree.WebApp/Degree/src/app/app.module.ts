@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -15,12 +15,13 @@ import { TweetCardComponent } from './components/tweet-card/tweet-card.component
 import { HashtagComponent } from './components/hashtag/hashtag.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import { PieSentimentComponent } from './components/pie-sentiment/pie-sentiment.component';
+import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
 @NgModule({
   declarations: [
     AppComponent,
     TweetCardComponent,
     HashtagComponent,
-    PieSentimentComponent
+    PieSentimentComponent,
   ],
   entryComponents: [
     TweetCardComponent
@@ -33,14 +34,16 @@ import { PieSentimentComponent } from './components/pie-sentiment/pie-sentiment.
     MatCardModule,
     MatChipsModule,
     NgxMasonryModule,
+    Ng4LoadingSpinnerModule.forRoot(),
     NgCircleProgressModule.forRoot({
       radius: 30,
       outerStrokeWidth: 16,
       innerStrokeWidth: 8,
       animationDuration: 50,
-    })
+    }),
   ],  
   providers: [BaseHttpService, TweetService, HttpClientModule],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
