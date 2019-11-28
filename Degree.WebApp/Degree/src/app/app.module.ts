@@ -28,19 +28,12 @@ import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule,
     BrowserAnimationsModule,
     HttpClientModule,
     MatCardModule,
     MatChipsModule,
     NgxMasonryModule,
-    Ng4LoadingSpinnerModule.forRoot(),
-    NgCircleProgressModule.forRoot({
-      radius: 30,
-      outerStrokeWidth: 16,
-      innerStrokeWidth: 8,
-      animationDuration: 50,
-    }),
+    Ng4LoadingSpinnerModule.forRoot()
   ],  
   providers: [BaseHttpService, TweetService, HttpClientModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
