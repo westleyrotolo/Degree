@@ -114,6 +114,9 @@ namespace Degree.Models
 
         [JsonProperty("lang")]
         public string Lang { get; set; }
+
+        [JsonIgnore]
+        public TweetSentiment TweetSentiment { get; set; }
     }
     public class ExtendedTweet
     {
@@ -235,9 +238,9 @@ namespace Degree.Models
 
         [JsonProperty("default_profile")]
         public bool DefaultProfile { get; set; }
-
+        [Column("default_profile_image")]
         [JsonProperty("default_profile_image")]
-        public bool default_profile_image { get; set; }
+        public bool DefaultProfileImage { get; set; }
 
 
         [JsonIgnore]

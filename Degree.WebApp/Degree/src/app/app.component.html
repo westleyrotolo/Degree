@@ -1,0 +1,9 @@
+<div>
+    <div class="alert alert-primary">test</div>
+    <ngx-masonry [options]="myOptions">
+        <div ngxMasonryItem class="masonry-item m18" *ngFor="let t of tweets" ngxMasonryItem>
+            <app-tweet-card class="m18" [tweet]="t"></app-tweet-card>
+        </div>
+    </ngx-masonry>
+</div>
+<router-outlet></router-outlet>

@@ -23,6 +23,11 @@ namespace Degree.AppDbContext
             modelBuilder.Entity<TweetRaw>().HasKey(x => x.Id);
             modelBuilder.Entity<TweetSentiment>().HasKey(x => x.TweetRawId);
 
+            modelBuilder.Entity<TweetRaw>()
+            .HasOne(e => e.TweetSentiment)
+            .WithOne(e => e.TweetRaw)
+            .OnDelete(DeleteBehavior.Cascade);
+
 
             modelBuilder.Entity<TweetRaw>()
             .HasOne(e => e.ExtendedTweet)

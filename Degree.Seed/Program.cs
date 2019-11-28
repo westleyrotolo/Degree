@@ -28,6 +28,7 @@ namespace Degree.Seed
                 Console.WriteLine("(D)ownload Tweets to files");
                 Console.WriteLine("(S)tore Tweets in DB from files");
                 Console.WriteLine("(G)et sentiment from Tweets");
+                Console.WriteLine("(E)xtract Hashtag");
                 Console.Write("Inserisci comando: ");
                 response = Console.ReadKey().KeyChar.ToString();
                 if (response.Equals("d", StringComparison.InvariantCultureIgnoreCase))
@@ -56,6 +57,10 @@ namespace Degree.Seed
                         await AppDbHelper<TweetSentiment>.InsertOrUpdateSentimentAsync(s.tweet);
                     }
                     Console.WriteLine("Finish");
+                }
+                else if (response.Equals("e", StringComparison.InvariantCultureIgnoreCase))
+                {
+
                 }
 
             } while (!response.Equals("0"));

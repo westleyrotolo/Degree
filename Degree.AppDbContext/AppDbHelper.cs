@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Degree.Models.Dto;
 
 namespace Degree.AppDbContext
 {
@@ -124,11 +125,85 @@ namespace Degree.AppDbContext
         {
             using (var context = new AppDbContext())
             {
-                var items = context.TweetsRaw.Where(t => !t.IsRetweetStatus).ToList();
+                var items = context.TweetsRaw.Where(t => !t.IsRetweetStatus)
+                .Include(x=>x.User)
+                .Include(x=>x.TweetSentiment)
+                .ThenInclude(x => x.Sentences)
+                .ToList();
                 return items;
             }
         }
 
+        public static List<TweetDto>FetchContains(string[] Hashtags,int page=0,int itemPerPage=0, bool skipRetweet=false)
+        {
+            using (var context = new AppDbContext())
+            {
+                var or = string.Join(" OR ", Hashtags.Select(x => $"LOWER(t.text) LIKE '%{x}%'"));
+                var query = $"SELECT * FROM tweetsraw as t WHERE ({or}) AND t.IsRetweetStatus = false";
+                var items = context.TweetsRaw
+                .FromSqlRaw(query)
+                .Skip(page * itemPerPage)
+                .Take(itemPerPage)
+                .Include(x => x.User)
+                .Include(x => x.TweetSentiment)
+                .ThenInclude(x => x.Sentences)
+                .ToList();
+                var dtos = items.Select((x) =>
+                new TweetDto
+                {
+                    Id = x.Id,
+                    CreatedAt = x.CreatedAt,
+                    Text = x.Text,
+                    InReplyToStatusId = x.InReplyToStatusId,
+                    InReplyToScreenName = x.InReplyToScreenName,
+                    UserDefaultProfile = x.User.DefaultProfile,
+                    UserDefaultProfileImage = x.User.DefaultProfileImage,
+                    FavoriteCount = x.FavoriteCount,
+                    UserFollowers = x.User.Followers,
+                    UserFollowing = x.User.Following,
+                    IsQuoteStatus = x.IsQuoteStatus,
+                    IsRetweetStatus = x.IsRetweetStatus,
+                    UserName = x.User.Name,
+                    UserScreenName = x.User.ScreenName,
+                    NegativeScore = x.TweetSentiment != null ? x.TweetSentiment.NegativeScore : -1,
+                    PositiveScore = x.TweetSentiment != null ? x.TweetSentiment.PositiveScore : -1,
+                    NeutralScore = x.TweetSentiment != null ? x.TweetSentiment.NeutralScore : -1,
+                    QuoteCount = x.QuoteCount,
+                    ReplyCount = x.ReplyCount,
+                    RetweetCount = x.RetweetCount,
+                    Sentiment = x.TweetSentiment != null ? x.TweetSentiment.Sentiment.ToString() : "",
+                    UserId = x.User.Id,
+                    UserProfileBanner = x.User.ProfileBanner,
+                    UserProfileImage = x.User.ProfileImage,
+                    UserVerified = x.User.Verified,
+                    SentimentSentence = (x.TweetSentiment != null && x.TweetSentiment.Sentences != null) ?
+                    x.TweetSentiment.Sentences.Select((s) =>
+                    new SentimentSentenceDto
+                    {
+                        Sentiment = s.Sentiment.ToString(),
+                        Length = s.Length,
+                        NegativeScore = s.NegativeScore,
+                        NeutralScore = s.NeutralScore,
+                        PositiveScore = s.PositiveScore
+                    }
+                    ).ToList() : null
+                }).ToList();
+                return dtos;
+
+            }
+        }
+        private static bool ContainsText(string[] Hashtags, string Tweet)
+        {
+
+            foreach(var h in Hashtags)
+            {
+                if (Tweet.ToLower().Contains(h.ToLower()))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
         public static async Task AddTweet(TweetRaw t)
         {
             try

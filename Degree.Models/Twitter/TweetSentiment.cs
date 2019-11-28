@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 
 namespace Degree.Models
 {
@@ -16,6 +17,8 @@ namespace Degree.Models
         public double NegativeScore { get; set; }
         public List<TweetSentenceSentiment> Sentences { get; set; } = new List<TweetSentenceSentiment>();
 
+        [JsonIgnore]
+        public TweetRaw TweetRaw { get; set; }
 
     }
 
@@ -33,6 +36,7 @@ namespace Degree.Models
         public int Offset { get; set; }
         public int Length { get; set; }
         public string[] Warnings { get; set; }
+        [JsonIgnore]
         public TweetSentiment TweetsSentiment { get; set; }
         public long TweetSentimentId { get; set; }
     }
