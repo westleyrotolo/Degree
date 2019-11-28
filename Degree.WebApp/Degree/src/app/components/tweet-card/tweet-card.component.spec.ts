@@ -23,3 +23,4 @@ describe('TweetCardComponent', () => {
     expect(component).toBeTruthy();
   });
 });
+

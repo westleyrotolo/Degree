@@ -29,7 +29,22 @@ namespace Degree.Models
         [JsonProperty("toDate", NullValueHandling = NullValueHandling.Ignore)]
         public string ToDate { get; set; }
     }
+    [Table("tweetshashtags")]
+    public class TweetHashtags
+    {
 
+        [Key]
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public long Id { get; set; }
+
+        [ForeignKey("TweetRaw")]
+        public long TweetRawId { get; set; }
+        public string Hashtags { get; set; }
+
+        [JsonIgnore]
+        public TweetRaw TweetRaw { get; set; }
+    }
     public class TweetRaw
     {
         [Key]
@@ -117,6 +132,9 @@ namespace Degree.Models
 
         [JsonIgnore]
         public TweetSentiment TweetSentiment { get; set; }
+
+        [JsonIgnore]
+        public List<TweetHashtags> TweetsHashtags { get; set; }
     }
     public class ExtendedTweet
     {

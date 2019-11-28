@@ -1,24 +1,33 @@
+<nav class="navbar navbar-light bg-light">
+    <span class="navbar-brand mb-0">Sentiment Analysis of World Congress Family tweets @ Verona, 29-31 March 2019</span>
+</nav>
 <div class="main">
     <div class="container-hashtags shadow p-3 mb-5 bg-white rounded">
         <div class="hashtags m-6">
-            <mat-chip-list >
-                    <mat-chip [className]="h.isActive ? 'mat-chip mat-primary mat-standard-chip mat-chip-active' : 'mat-chip mat-primary mat-standard-chip mat-chip-inactive'" *ngFor="let h of hashtags"  (click)="toggleHashtag(h)">
-                        <span >{{h.hashtag}}</span>
-                    </mat-chip>
+            <mat-chip-list   >
+                <mat-chip
+                    [className]="h.isActive ? 'mat-chip mat-primary mat-standard-chip mat-chip-active' : 'mat-chip mat-primary mat-standard-chip mat-chip-inactive'"
+                    *ngFor="let h of hashtags" (click)="toggleHashtag(h)">
+                    <span class="pr-1">{{h.hashtags}}  </span>
+                    <span class="badge badge-light">{{h.count}}</span>
+                </mat-chip>
             </mat-chip-list>
-            <button id="btnSearch" type="button" class="btn btn-primary button-search" (click)="resetRequest()" >Search</button>
+            <button [hidden]="toLoad" id="btnSearch" type="button" class="btn btn-primary button-search"
+                (click)="resetRequest()">Search</button>
         </div>
     </div>
     <div class="container-tweets">
-        
-    <ngx-masonry style="margin:0, auto; min-height: 100%;" [updateLayout]="updateMasonryLayout" class="tweets" [options]="myOptions" >
-        <div ngxMasonryItem class="masonry-item m-6 " *ngFor="let t of tweets" ngxMasonryItem>
-            <app-tweet-card  [tweet]="t"></app-tweet-card>
+
+        <ngx-masonry style="margin:0, auto;" [updateLayout]="updateMasonryLayout" class="tweets"
+            [options]="myOptions">
+            <div ngxMasonryItem class="masonry-item m-6 " *ngFor="let t of tweets" ngxMasonryItem>
+                <app-tweet-card [tweet]="t"></app-tweet-card>
+            </div>
+        </ngx-masonry>
+        <div class="wrapper-load">
+            <button [hidden]="toLoad" type="button" class="btn btn-secondary button-load" (click)="loadMore()">Load
+                more</button>
         </div>
-    </ngx-masonry>
-<div class="wrapper-load">
-    <button type="button" class="btn btn-secondary button-load" (click)="loadMore()">Load more</button>
-</div>
     </div>
 </div>
 <ng4-loading-spinner> </ng4-loading-spinner>

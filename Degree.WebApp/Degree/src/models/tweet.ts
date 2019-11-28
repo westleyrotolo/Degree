@@ -1,42 +1,48 @@
 export interface Tweet {
-    Id: number
-    CreatedAt: Date
-    Text: string
-    InReplyToStatusId?: number
-    InReplyToScreenName?: string
-    IsRetweetStatus: boolean
-    IsQuoteStatus: boolean
-    QuoteCount: number
-    ReplyCount: number
-    RetweetCount: number
-    FavoriteCount: number
-    UserId: number
-    UserName: string
-    UserScreenName: string
-    UserVerified: boolean
-    UserFollowers:number
-    UserFollowing: number
-    UserProfileImage: string
-    UserProfileBanner: string
-    UserDefaultProfile: boolean
+    id: number
+    createdAt: Date
+    text: string
+    inReplyToStatusId?: number
+    inReplyToScreenName?: string
+    isRetweetStatus: boolean
+    isQuoteStatus: boolean
+    quoteCount: number
+    replyCount: number
+    retweetCount: number
+    favoriteCount: number
+    userId: number
+    userName: string
+    userScreenName: string
+    userVerified: boolean
+    userFollowers:number
+    userFollowing: number
+    userProfileImage: string
+    userProfileBanner: string
+    userDefaultProfile: boolean
     UserDefaultProfileImage: boolean
-    Sentiment: string
-    PositiveScore: number
-    NeutralScore:number
-    NegativeScore:number
-    SentimentSentences?: SentimentSentence[]
+    sentiment: string
+    positiveScore: number
+    neutralScore:number
+    negativeScore:number
+    sentimentSentences?: SentimentSentence[]
+    hashtags?: string[]
 }
 export interface SentimentSentence{
-    Sentiment:string;
-    PositiveScore: number;
-    NeutralScore:number
-    NegativeScore:number
-    Offset:number
-    Length:number
+    sentiment:string;
+    positiveScore: number;
+    neutralScore:number
+    negativeScore:number
+    offset:number
+    length:number
 }
 export enum Sentiment {
     Positive = 'Positive',
     Negative = 'Negative',
     Neutral = 'Neutral',
     Mixed = 'Mixed'
+}
+export interface HashtagsCount {
+    hashtags: string;
+    count: number;
+    isActive: boolean;    
 }

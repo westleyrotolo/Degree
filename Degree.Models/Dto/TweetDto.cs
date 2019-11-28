@@ -32,6 +32,7 @@ namespace Degree.Models.Dto
         public double NegativeScore { get; set; }
 
         public List<SentimentSentenceDto> SentimentSentence { get; set; }
+        public List<string> Hashtags { get; set; }
     }
     public class SentimentSentenceDto
     {
@@ -41,5 +42,10 @@ namespace Degree.Models.Dto
             public double NegativeScore { get; set; }
             public int Offset { get; set; }
             public int Length { get; set; }
+    }
+    public class HashtagsCount
+    {
+        public string Hashtags { get; set; }
+        public int Count { get; set; }
     }
 }

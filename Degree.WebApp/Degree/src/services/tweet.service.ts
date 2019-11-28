@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BaseHttpService } from './base-http.service';
 import { Observable } from 'rxjs';
-import { Tweet } from 'src/models/tweet';
+import { Tweet, HashtagsCount } from 'src/models/tweet';
 import { ApiRequest } from 'src/models/apiRequest';
 
 @Injectable({
@@ -14,5 +14,9 @@ export class TweetService {
   fetchTweets(apiRequest: ApiRequest):Observable<Tweet[]>{
       const url = '/Search';
       return this.apiCLient.post(apiRequest, this.BASE_URL + url);
+  }
+  fetchHashtags():Observable<HashtagsCount[]>{
+    const url = '/GetHashtags';
+    return this.apiCLient.getData(this.BASE_URL + url);
   }
 }

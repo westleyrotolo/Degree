@@ -25,12 +25,25 @@ namespace Degree.WebApi.Controllers
         public IEnumerable<TweetDto> TweetsByHashtags([FromBody]ApiRequest apiRequest)
         {
             try
-            { 
-                var tweets = AppDbHelper<TweetRaw>.FetchContains(apiRequest.hashtags, apiRequest.page,apiRequest.itemPerPage, true);
+            {
+                var tweets = AppDbHelper<TweetRaw>.FetchContains(apiRequest.hashtags, apiRequest.page, apiRequest.itemPerPage, true);
                 return tweets;
             }
-            catch (Exception ex) 
-		            {
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+        [HttpGet("GetHashtags")]
+        public IEnumerable<HashtagsCount> GetHashtags()
+        {
+            try
+            {
+                var hashtags = AppDbHelper<TweetRaw>.GroupbyHashtags();
+                return hashtags;
+            }
+            catch (Exception ex)
+            {
                 return null;
             }
         }

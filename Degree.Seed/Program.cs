@@ -21,49 +21,81 @@ namespace Degree.Seed
     {
         static async Task Main(string[] args)
         {
-            Keys.LoadKey();
-            string response = "";
-            do
+            try
             {
-                Console.WriteLine("(D)ownload Tweets to files");
-                Console.WriteLine("(S)tore Tweets in DB from files");
-                Console.WriteLine("(G)et sentiment from Tweets");
-                Console.WriteLine("(E)xtract Hashtag");
-                Console.Write("Inserisci comando: ");
-                response = Console.ReadKey().KeyChar.ToString();
-                if (response.Equals("d", StringComparison.InvariantCultureIgnoreCase))
+                Keys.LoadKey();
+                string response = "";
+                do
                 {
-
-                    var tweets = Degree.AppDbContext.AppDbHelper<TweetRaw>.Fetch().ToList();
-                }
-                else if (response.Equals("s", StringComparison.InvariantCultureIgnoreCase))
-                {
-
-                    var paths = new string[] { "WCF/WCF20192903/wcf2019329-", "WCF/WCF20193003/wcf2019330-", "WCF/WCF20193103/wcf2019331-" };
-
-                    var tasks = paths.Select((x, i) => StoreTweet(paths[i], i));
-                    await Task.WhenAll(tasks);
-                   
-                    Console.WriteLine("Finish.");
-                    
-                }
-                else if (response.Equals("g", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    var tweets = AppDbHelper<TweetRaw>.FetchNotRetweeted();
-                    var sentiments =await AzureSentiment.AnalyzeTweetSentiment(tweets);
-                    foreach (var s in sentiments.Select((s, i) => new { tweet=s, index=i }))
+                    Console.WriteLine("(D)ownload Tweets to files");
+                    Console.WriteLine("(S)tore Tweets in DB from files");
+                    Console.WriteLine("(G)et sentiment from Tweets");
+                    Console.WriteLine("(E)xtract Hashtag");
+                    Console.Write("Inserisci comando: ");
+                    response = Console.ReadKey().KeyChar.ToString();
+                    if (response.Equals("d", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        Console.WriteLine($"{s.index}. TwId:{s.tweet.TweetRawId}, Sentiment:{s.tweet.Sentiment.ToString()}");
-                        await AppDbHelper<TweetSentiment>.InsertOrUpdateSentimentAsync(s.tweet);
+
+                        var tweets = Degree.AppDbContext.AppDbHelper<TweetRaw>.Fetch().ToList();
                     }
-                    Console.WriteLine("Finish");
-                }
-                else if (response.Equals("e", StringComparison.InvariantCultureIgnoreCase))
-                {
+                    else if (response.Equals("s", StringComparison.InvariantCultureIgnoreCase))
+                    {
 
-                }
+                        var paths = new string[] { "WCF/WCF20192903/wcf2019329-", "WCF/WCF20193003/wcf2019330-", "WCF/WCF20193103/wcf2019331-" };
 
-            } while (!response.Equals("0"));
+                        var tasks = paths.Select((x, i) => StoreTweet(paths[i], i));
+                        await Task.WhenAll(tasks);
+
+                        Console.WriteLine("Finish.");
+
+                    }
+                    else if (response.Equals("g", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        var tweets = AppDbHelper<TweetRaw>.FetchNotRetweeted();
+                        var sentiments = await AzureSentiment.AnalyzeTweetSentiment(tweets);
+                        foreach (var s in sentiments.Select((s, i) => new { tweet = s, index = i }))
+                        {
+                            Console.WriteLine($"{s.index}. TwId:{s.tweet.TweetRawId}, Sentiment:{s.tweet.Sentiment.ToString()}");
+                            await AppDbHelper<TweetSentiment>.InsertOrUpdateSentimentAsync(s.tweet);
+                        }
+                        Console.WriteLine("Finish");
+                    }
+                    else if (response.Equals("e", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        var tweets = AppDbHelper<TweetRaw>.FetchNotRetweeted();
+                        var hashtags = new List<TweetHashtags>();
+                        foreach (var t in tweets)
+                        {
+                            Constants.Hashtags.ToList().ForEach(x =>
+                            {
+                                if (t.Text.Contains(x, StringComparison.InvariantCultureIgnoreCase))
+                                {
+
+                                    var tweetHashtag = new TweetHashtags
+                                    {
+                                        TweetRawId = t.Id,
+                                        Hashtags = x
+                                    };
+                                    hashtags.Add(tweetHashtag);
+                                }
+
+                            });
+
+                        }
+                        foreach (var h in hashtags)
+                        {
+                            Console.WriteLine($"Insert in TwId: {h.TweetRawId}, Hashtags: {h.Hashtags}");
+                            await AppDbHelper<TweetRaw>.InsertOrUpdateHashtagsAsync(h);
+                        }
+                    }
+
+                } while (!response.Equals("0"));
+            }
+            catch (Exception ex)
+            {
+
+            }
+            
 
            
         }

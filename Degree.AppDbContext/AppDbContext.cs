@@ -50,6 +50,12 @@ namespace Degree.AppDbContext
             .HasOne(x => x.BoundingBox)
             .WithOne(x => x.Place);
 
+            modelBuilder.Entity<TweetRaw>()
+            .HasMany(x => x.TweetsHashtags)
+            .WithOne(x => x.TweetRaw)
+            .HasForeignKey(x => x.TweetRawId)
+            .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<TweetSentiment>()
             .HasMany(x => x.Sentences)
             .WithOne(x => x.TweetsSentiment)
@@ -115,6 +121,7 @@ namespace Degree.AppDbContext
         public DbSet<User> Users { get; set; }
         public DbSet<TweetSentiment> TweetsSentiment { get; set; }
         public DbSet<TweetSentenceSentiment> SentenceSentiments { get; set; }
-        
+        public DbSet<TweetHashtags> TweetsHashtags { get; set; }
+
     }
 }

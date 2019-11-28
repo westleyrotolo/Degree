@@ -99,6 +99,34 @@ namespace Degree.AppDbContext
             }
 
         }
+
+        public static async Task<TweetHashtags> InsertOrUpdateHashtagsAsync(TweetHashtags hashtags)
+        {
+            using (var context = new AppDbContext())
+            {
+                if (context.TweetsHashtags.Count(x => x.TweetRawId == hashtags.Id && x.Hashtags == hashtags.Hashtags) == 0)
+                {
+
+                    await context.AddAsync(hashtags);
+                    await context.SaveChangesAsync();
+                }
+                return hashtags;
+            }
+
+        }
+
+        public static List<HashtagsCount> GroupbyHashtags()
+        {
+            using (var context = new AppDbContext())
+            {
+                var hashtags = context.TweetsHashtags
+                   .GroupBy(h => h.Hashtags)
+                   .Select(h => new HashtagsCount {  Hashtags = h.Key, Count = h.Count() })
+                   .ToList();
+                return hashtags;
+            }
+        }
+
         public static List<TweetRaw> Fetch()
         {
             using (var context = new AppDbContext())
@@ -132,6 +160,7 @@ namespace Degree.AppDbContext
                 .Skip(page * itemPerPage)
                 .Take(itemPerPage)
                 .Include(x => x.User)
+                .Include(x => x.TweetsHashtags)
                 .Include(x => x.TweetSentiment)
                 .ThenInclude(x => x.Sentences)
                 .ToList();
@@ -173,7 +202,9 @@ namespace Degree.AppDbContext
                         NeutralScore = s.NeutralScore,
                         PositiveScore = s.PositiveScore
                     }
-                    ).ToList() : null
+                    ).ToList() : null,
+                    Hashtags = (x.TweetsHashtags != null) ?
+                    x.TweetsHashtags.Select((h) => h.Hashtags).ToList() : null
                 }).ToList();
                 return dtos;
 

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { TweetService } from 'src/services/tweet.service';
-import { Tweet } from 'src/models/tweet';
+import { Tweet, HashtagsCount } from 'src/models/tweet';
 import { NgxMasonryOptions } from 'ngx-masonry';
 import { ApiRequest } from 'src/models/apiRequest';
 import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
@@ -16,6 +16,7 @@ export class AppComponent implements OnInit {
   tweets: Tweet[];
   title = 'Degree';
   updateMasonryLayout: boolean;
+  /*
   hashtags: ToggleHashtag[] = [
     { hashtag: "#Adozionigay", isActive: true },
     { hashtag: "#Prolgbt", isActive: true },
@@ -36,39 +37,50 @@ export class AppComponent implements OnInit {
     { hashtag: "#Affidocondiviso", isActive: true },
     { hashtag: "#Affidoparitario", isActive: true }
   ];
+  */
+  hashtags: HashtagsCount[] = [];
   tweetRequest: ApiRequest =
     {
       itemPerPage: 50,
       page: 0,
       hashtags: []
     }
+  toLoad = true
   constructor(private tweetService: TweetService,
     private spinner: Ng4LoadingSpinnerService) { }
   ngOnInit() {
     this.spinner.show();
-    this.resetRequest();
-    this.tweetService.fetchTweets(this.tweetRequest).subscribe((resp) => {
-      this.spinner.hide();
+    this.tweetService.fetchHashtags().subscribe((resp)=> {
+      resp.forEach((x) => this.hashtags.push({
+        isActive: true,
+        count: x.count,
+        hashtags: x.hashtags
+      }));
+      this.resetRequest();
+      this.tweetService.fetchTweets(this.tweetRequest).subscribe((resp) => {
+        this.spinner.hide();
+        this.toLoad = false;
+        this.tweets = resp;
+        console.log('resp:', resp);
+        console.log('tweets:', this.tweets);
+      },
+        (error?) => console.log(error)
+      );
+    })
 
-      this.tweets = resp;
-      console.log('resp:', resp);
-      console.log('tweets:', this.tweets);
-    },
-      (error?) => console.log(error));
   }
   resetRequest() {
     this.tweetRequest = {
       itemPerPage: 50,
       page: 0,
-      hashtags: this.hashtags.filter(x=>x.isActive).map(x => x.hashtag )
+      hashtags: this.hashtags.filter(x=>x.isActive).map(x => x.hashtags )
     }
   }
-  toggleHashtag(th: ToggleHashtag) {
+  toggleHashtag(th: HashtagsCount) {
     th.isActive = !th.isActive;
   }
   loadMore() {
     this.tweetRequest.page++;
-    this.tweetRequest.hashtags = this.hashtags.filter(x=>x.isActive).map(x => x.hashtag )
     this.spinner.show();
     this.tweetService.fetchTweets(this.tweetRequest).subscribe((resp) => {
       this.spinner.hide();
