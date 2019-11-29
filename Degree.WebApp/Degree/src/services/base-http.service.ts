@@ -1,14 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/observable/throw';
 import {catchError, map, tap} from 'rxjs/operators';
 import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 import { HttpModule } from '@angular/http';
 import { headersToString } from 'selenium-webdriver/http';
-
 const httpOptions = {
     headers: new HttpHeaders(
       { 'Content-Type': 'application/json' }
@@ -40,8 +36,9 @@ export class BaseHttpService {
       const body = JSON.stringify(model);
       return this.http
           .post(url, body, options)
-          .map(this.extractData)
-          .catch(this.handleErrorObservable);
+          .pipe(
+            map(this.extractData),
+            catchError(this.handleErrorObservable));
   }
 
   deleteByBody(model, url: string): Observable<any> {
@@ -53,8 +50,9 @@ export class BaseHttpService {
       const body = JSON.parse(model);
       return this.http
           .post(url, body, options)
-          .map(this.extractData)
-          .catch(this.handleErrorObservable);
+          .pipe(
+              map(this.extractData),
+              catchError(this.handleErrorObservable));
   }
 
   delete(url: string): Observable<any> {
@@ -65,8 +63,9 @@ export class BaseHttpService {
 
       return this.http
           .delete(url, options)
-          .map(this.extractData)
-          .catch(this.handleErrorObservable);
+          .pipe(
+          map(this.extractData),
+          catchError(this.handleErrorObservable));
   }
 
   edit(model, url: string): Observable<any> {
@@ -77,8 +76,9 @@ export class BaseHttpService {
       const body = JSON.stringify(model);
       return this.http
           .put(url, body, options)
-          .map(this.extractData)
-          .catch(this.handleErrorObservable);
+          .pipe(
+          map(this.extractData),
+          catchError(this.handleErrorObservable));
   }
 
   editByParams(url: string): Observable<any> {
@@ -88,8 +88,9 @@ export class BaseHttpService {
       const options = { headers: headers };
       return this.http
           .put(url, '', options)
-          .map(this.extractData)
-          .catch(this.handleErrorObservable);
+          .pipe(
+          map(this.extractData),
+          catchError(this.handleErrorObservable));
   }
 
   private extractData(res: Response) {
