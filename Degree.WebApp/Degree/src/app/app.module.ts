@@ -13,7 +13,7 @@ import {
 import { NgxMasonryModule } from 'ngx-masonry';
 import { TweetCardComponent } from './components/tweet-card/tweet-card.component';
 import { HashtagComponent } from './components/hashtag/hashtag.component';
-import { NgCircleProgressModule, CircleProgressComponent, CircleProgressOptions } from 'ng-circle-progress';
+import { NgCircleProgressModule, CircleProgressOptions } from 'ng-circle-progress';
 import { PieSentimentComponent } from './components/pie-sentiment/pie-sentiment.component';
 import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
 @NgModule({
@@ -21,7 +21,7 @@ import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
     AppComponent,
     TweetCardComponent,
     HashtagComponent,
-    PieSentimentComponent
+    PieSentimentComponent,
   ],
   entryComponents: [
     TweetCardComponent
@@ -31,9 +31,9 @@ import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
     BrowserAnimationsModule,
     HttpClientModule,
     MatCardModule,
-    NgCircleProgressModule,
     MatChipsModule,
     NgxMasonryModule,
+    NgCircleProgressModule,
     Ng4LoadingSpinnerModule.forRoot()
   ],  
   providers: [BaseHttpService, TweetService, HttpClientModule, CircleProgressOptions],

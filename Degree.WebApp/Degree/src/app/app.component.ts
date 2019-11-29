@@ -11,33 +11,12 @@ import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
 })
 export class AppComponent implements OnInit {
   public myOptions: NgxMasonryOptions = {
-    transitionDuration: '0.8s'
+    transitionDuration: '0s',
+
   };
   tweets: Tweet[];
   title = 'Degree';
   updateMasonryLayout: boolean;
-  /*
-  hashtags: ToggleHashtag[] = [
-    { hashtag: "#Adozionigay", isActive: true },
-    { hashtag: "#Prolgbt", isActive: true },
-    { hashtag: "#Famigliatradizionale", isActive: true },
-    { hashtag: "#cirinnà", isActive: true },
-    { hashtag: "famigliaarcobaleno", isActive: true },
-    { hashtag: "#Congressodellefamiglie", isActive: true },
-    { hashtag: "#Congressomondialedellefamiglie", isActive: true },
-    { hashtag: "#WCFVerona", isActive: true },
-    { hashtag: "#NoWCFVerona", isActive: true },
-    { hashtag: "#No194", isActive: true },
-    { hashtag: "#noeutonasia", isActive: true },
-    { hashtag: "#uteroinaffitto", isActive: true },
-    { hashtag: "#NoDDLPillon", isActive: true },
-    { hashtag: "#Pillon", isActive: true },
-    { hashtag: "#Pilloff", isActive: true },
-    { hashtag: "#Spadafora", isActive: true },
-    { hashtag: "#Affidocondiviso", isActive: true },
-    { hashtag: "#Affidoparitario", isActive: true }
-  ];
-  */
   hashtags: HashtagsCount[] = [];
   tweetRequest: ApiRequest =
     {
@@ -57,18 +36,25 @@ export class AppComponent implements OnInit {
         hashtags: x.hashtags
       }));
       this.resetRequest();
-      this.tweetService.fetchTweets(this.tweetRequest).subscribe((resp) => {
-        this.spinner.hide();
-        this.toLoad = false;
-        this.tweets = resp;
-        console.log('resp:', resp);
-        console.log('tweets:', this.tweets);
-      },
-        (error?) => console.log(error)
-      );
+      this.initTweetRequet();
     })
 
   }
+  initTweetRequet(){
+    this.spinner.show();
+    this.resetRequest();
+    this.tweetService.fetchTweets(this.tweetRequest).subscribe((resp) => {
+      this.spinner.hide();
+      this.toLoad = false;
+      this.tweets = resp;
+      console.log('resp:', resp);
+      console.log('tweets:', this.tweets);
+      this.spinner.hide();
+    },
+      (error?) => console.log(error)
+    );
+  }
+
   resetRequest() {
     this.tweetRequest = {
       itemPerPage: 50,
@@ -80,6 +66,7 @@ export class AppComponent implements OnInit {
     th.isActive = !th.isActive;
   }
   loadMore() {
+    this.myOptions.transitionDuration = '0.8s'
     this.tweetRequest.page++;
     this.spinner.show();
     this.tweetService.fetchTweets(this.tweetRequest).subscribe((resp) => {

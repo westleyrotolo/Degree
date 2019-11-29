@@ -1,5 +1,5 @@
 .masonry-item { width: 350px; }
-.m-6 {margin: 6px;}
+.m6 {margin: 6px;}
 .main {
     background-color: #efefef;
 }   
@@ -18,7 +18,28 @@
       display: table;
       width: 100%;
   }
-
+  @media screen and (max-width: 600px) {
+    .button-search {
+        min-width: 90%!important;
+        margin: auto;
+        margin-bottom: 6px!important;
+    }
+    .tweets{
+        min-width: 100%;
+    }
+    .mat-chip-active {
+        min-width: 100%;
+    }
+    .hashtags {
+        min-width: 100%;
+    }
+    .mat-chip-inactive {
+        min-width: 100%;
+    }
+    .masonry-item {
+        min-width: calc(100%-1px);
+    }
+}
   .hashtags {
     display: block;
       width: 60%;
@@ -36,19 +57,20 @@
     color: black!important;
     cursor: pointer!important;
 }
+#svgSearch
+{
+  margin: auto auto;
+  display: block;
+  height: 30%;
+}
 ::ng-deep .mat-chip-list-wrapper {
     justify-content: center!important;
 }
 .button-search {
-    display: flex;
-    margin-left: 0;
-    justify-content: center;
-    margin-right: auto;
+    margin-right: 0;
     margin-left: auto;
-    margin-top: 30px;
-    margin-bottom: -40px;
-    padding-left: 30px;
-    padding-right: 30px;
+    min-width: 200px;
+    font-weight: 700;
 }
 #btnSearch.btn-primary {
     background-color: #00acee!important;
