@@ -13,6 +13,9 @@ namespace Degree.Services.TextAnalysis.Azure
 {
     public static class AzureSentiment
     {
+
+
+
         public static async Task<List<TweetSentiment>> AnalyzeTweetSentiment(List<TweetRaw> tweets)
         {
             var tweetsSentiment = new List<TweetSentiment>();
@@ -68,7 +71,7 @@ namespace Degree.Services.TextAnalysis.Azure
                 }
                 temp.Clear();
                 temp.AddRange(tweets.Skip(itemPerPage * page++).Take(itemPerPage));
-            }
+            } 
             return tweetsSentiment;
         }
 

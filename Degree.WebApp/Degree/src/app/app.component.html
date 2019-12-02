@@ -1,33 +1,4 @@
-
 <div class="main">
-     <button [hidden]="toLoad" id="btnSearch" type="button" class="btn btn-primary button-search"
-    (click)="initTweetRequet()">
-    <span>Search</span>
-  </button>
-    <div class="container-hashtags shadow p-3 mb-5 bg-white rounded">
-        <div class="hashtags m-6">
-            <mat-chip-list   >
-                <mat-chip
-                    [className]="h.isActive ? 'mat-chip mat-primary mat-standard-chip mat-chip-active' : 'mat-chip mat-primary mat-standard-chip mat-chip-inactive'"
-                    *ngFor="let h of hashtags" (click)="toggleHashtag(h)">
-                    <span class="pr-1">{{h.hashtags}}  </span>
-                    <span class="badge badge-light">{{h.count}}</span>
-                </mat-chip>
-            </mat-chip-list>
-        </div>
-    </div>
-    <div class="container-tweets">
-
-        <ngx-masonry style="margin:0, auto;" [updateLayout]="updateMasonryLayout" class="tweets"
-            [options]="myOptions">
-            <div ngxMasonryItem class="masonry-item m6" *ngFor="let t of tweets" ngxMasonryItem>
-                <app-tweet-card [tweet]="t"></app-tweet-card>
-            </div>
-        </ngx-masonry>
-        <div class="wrapper-load">
-            <button [hidden]="toLoad" type="button" class="btn btn-secondary button-load" (click)="loadMore()">Load
-                more</button>
-        </div>
-    </div>
+<nav> Test </nav>
+<router-outlet></router-outlet>
 </div>
-<ng4-loading-spinner> </ng4-loading-spinner>

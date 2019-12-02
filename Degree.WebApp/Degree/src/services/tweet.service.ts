@@ -8,7 +8,8 @@ import { ApiRequest } from 'src/models/apiRequest';
   providedIn: 'root'
 })
 export class TweetService {
-  readonly BASE_URL = 'https://degree-webapi.azurewebsites.net/TweetApi';
+ // readonly BASE_URL = 'https://degree-webapi.azurewebsites.net/TweetApi';
+  readonly BASE_URL = 'https://localhost:5001/TweetApi';
   constructor(private apiCLient: BaseHttpService) { }
 
   fetchTweets(apiRequest: ApiRequest):Observable<Tweet[]>{

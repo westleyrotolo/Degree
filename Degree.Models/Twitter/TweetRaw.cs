@@ -53,6 +53,15 @@ namespace Degree.Models
 
         [JsonProperty("created_at")]
         public DateTime CreatedAt { get; set; }
+        [JsonIgnore]
+        [NotMapped]
+        public int CreatedAtInt
+        {
+            get
+            {
+               return int.Parse(CreatedAt.ToString("yyyyMMdd"));
+            }
+        }
 
         [JsonProperty("text")]
         public string Text { get; set; }

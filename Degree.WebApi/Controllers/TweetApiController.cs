@@ -8,6 +8,7 @@ using Degree.AppDbContext;
 using Degree.Models;
 using Degree.Models.Dto;
 using Degree.Models.WebApi;
+using Degree.Models.Twitter;
 
 namespace Degree.WebApi.Controllers
 {
@@ -26,7 +27,7 @@ namespace Degree.WebApi.Controllers
         {
             try
             {
-                var tweets = AppDbHelper<TweetRaw>.FetchContains(apiRequest.hashtags, apiRequest.page, apiRequest.itemPerPage, true);
+                var tweets = AppDbHelper<TweetRaw>.FetchContains(apiRequest.hashtags, apiRequest.page, apiRequest.itemPerPage, true, apiRequest.OrderSentiment);
                 return tweets;
             }
             catch (Exception ex)
@@ -41,6 +42,19 @@ namespace Degree.WebApi.Controllers
             {
                 var hashtags = AppDbHelper<TweetRaw>.GroupbyHashtags();
                 return hashtags;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+        [HttpGet("GetGroupedHashtags")]
+        public IEnumerable<HashtagsGrouped> GetGroupedHashtagsBySentiment()
+        {
+            try
+            {
+                var groupedHashtags = AppDbHelper<HashtagsGrouped>.GroupSentimentByHashtags();
+                return groupedHashtags;
             }
             catch (Exception ex)
             {

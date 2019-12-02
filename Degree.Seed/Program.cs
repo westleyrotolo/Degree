@@ -62,6 +62,9 @@ namespace Degree.Seed
                     }
                     else if (response.Equals("e", StringComparison.InvariantCultureIgnoreCase))
                     {
+
+                        var or = string.Join(" OR ", Constants.Hashtags.Select(x => $"LOWER(t.text) LIKE '%{x}%'"));
+                        var query = $"SELECT * FROM tweetsraw as t WHERE ({or}) AND t.IsRetweetStatus = false";
                         var tweets = AppDbHelper<TweetRaw>.FetchNotRetweeted();
                         var hashtags = new List<TweetHashtags>();
                         foreach (var t in tweets)
@@ -81,6 +84,11 @@ namespace Degree.Seed
 
                             });
 
+                        }
+                        var fuck = hashtags.GroupBy(x => x.Hashtags).Select(x=> new {h = x.Key, v = x.Count() }).ToList();
+                        foreach (var f in fuck)
+                        {
+                            Console.WriteLine($"{f.h}, {f.v}");
                         }
                         foreach (var h in hashtags)
                         {

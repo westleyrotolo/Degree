@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Degree.Models.Dto;
+using Degree.Models.WebApi;
+using Degree.Models.Twitter;
 
 namespace Degree.AppDbContext
 {
@@ -131,10 +133,15 @@ namespace Degree.AppDbContext
         {
             using (var context = new AppDbContext())
             {
-                var items = context.TweetsRaw.ToList();
+                var items = context.TweetsRaw
+                .Include(x => x.User)
+                .Include(x => x.TweetSentiment)
+                .ThenInclude(x => x.Sentences)
+                .ToList();
                 return items;
             }
         }
+
         public static List<TweetRaw> FetchNotRetweeted()
         {
             using (var context = new AppDbContext())
@@ -148,21 +155,29 @@ namespace Degree.AppDbContext
             }
         }
 
-        public static List<TweetDto>FetchContains(string[] Hashtags,int page=0,int itemPerPage=0, bool skipRetweet=false)
+        public static List<TweetDto>FetchContains(string[] Hashtags,int page=0,int itemPerPage=0, bool skipRetweet=false, OrderSentiment  orderSentiment = OrderSentiment.NoOrder)
         {
             using (var context = new AppDbContext())
             {
+                // workaround - Linq non supporta Any
                 var or = string.Join(" OR ", Hashtags.Select(x => $"LOWER(t.text) LIKE '%{x}%'"));
                 var query = $"SELECT * FROM tweetsraw as t WHERE ({or}) AND t.IsRetweetStatus = false";
                 var items = context.TweetsRaw
                 .FromSqlRaw(query)
-                .OrderByDescending(x=>x.CreatedAt)
-                .Skip(page * itemPerPage)
-                .Take(itemPerPage)
                 .Include(x => x.User)
                 .Include(x => x.TweetsHashtags)
                 .Include(x => x.TweetSentiment)
                 .ThenInclude(x => x.Sentences)
+                .OrderByDescending(x => orderSentiment == OrderSentiment.Positive
+                                    ? x.TweetSentiment.PositiveScore : (orderSentiment == OrderSentiment.Negative
+                                    ? x.TweetSentiment.NegativeScore : 1))
+                .ThenByDescending(x => orderSentiment == OrderSentiment.Reply
+                                    ? x.ReplyCount : (orderSentiment == OrderSentiment.Retweet
+                                    ? x.RetweetCount : (orderSentiment == OrderSentiment.Favorite
+                                    ? x.FavoriteCount : 1)))
+                .ThenByDescending(x=>x.CreatedAt)
+                .Skip(page * itemPerPage)
+                .Take(itemPerPage)    
                 .ToList();
                 var dtos = items.Select((x) =>
                 new TweetDto
@@ -209,7 +224,23 @@ namespace Degree.AppDbContext
                 return dtos;
 
             }
+        }   
+
+        public static List<HashtagsGrouped> GroupSentimentByHashtags(bool withRetweet = true)
+        {
+            var withRetweetStr = withRetweet ? "COALESCE(t.RetweetedStatusId, t.Id)" : "t.Id";
+            var query = $"SELECT h.Hashtags, COUNT(*) AS TweetCount, AVG(s.PositiveScore) AS PositiveScore, AVG(s.NeutralScore) AS NegativeScore, AVG(s.NegativeScore) AS NegativeScore, SUM(s.Sentiment=\"Positive\") AS PositiveLabel, SUM(s.Sentiment=\"Neutral\") AS NeutralLabel, SUM(s.Sentiment=\"Mixed\") AS MixedLabel, SUM(s.Sentiment=\"Negative\") AS NegativeLabel FROM degree.tweetshashtags AS h INNER JOIN degree.tweetsraw AS t ON h.TweetRawId = ${withRetweetStr} INNER JOIN degree.tweetssentiment as s ON {withRetweetStr} = s.TweetRawId GROUP BY h.Hashtags";
+            using (var context = new AppDbContext())
+            {
+               var hashtagsGrounped = context
+                .Set<HashtagsGrouped>()
+                .FromSqlRaw(query)
+                .ToList();
+                return hashtagsGrounped;
+            }
+            
         }
+
         private static bool ContainsText(string[] Hashtags, string Tweet)
         {
 
@@ -222,6 +253,9 @@ namespace Degree.AppDbContext
             }
             return false;
         }
+
+
+
         public static async Task AddTweet(TweetRaw t)
         {
             try
