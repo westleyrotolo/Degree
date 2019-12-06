@@ -62,10 +62,7 @@ namespace Degree.Seed
                     }
                     else if (response.Equals("e", StringComparison.InvariantCultureIgnoreCase))
                     {
-
-                        var or = string.Join(" OR ", Constants.Hashtags.Select(x => $"LOWER(t.text) LIKE '%{x}%'"));
-                        var query = $"SELECT * FROM tweetsraw as t WHERE ({or}) AND t.IsRetweetStatus = false";
-                        var tweets = AppDbHelper<TweetRaw>.FetchNotRetweeted();
+                        var tweets = AppDbHelper<TweetRaw>.Fetch();
                         var hashtags = new List<TweetHashtags>();
                         foreach (var t in tweets)
                         {
@@ -85,16 +82,25 @@ namespace Degree.Seed
                             });
 
                         }
-                        var fuck = hashtags.GroupBy(x => x.Hashtags).Select(x=> new {h = x.Key, v = x.Count() }).ToList();
+                        var fuck = hashtags.GroupBy(x => x.Hashtags).Select(x => new { h = x.Key, v = x.Count() }).ToList();
                         foreach (var f in fuck)
                         {
                             Console.WriteLine($"{f.h}, {f.v}");
                         }
-                        foreach (var h in hashtags)
+                        int take = hashtags.Count / 4;
+                        int p = 0;
+                        var tasksItems = new List<List<TweetHashtags>>();
+                        for (int i = 0; i<4; i++)
                         {
-                            Console.WriteLine($"Insert in TwId: {h.TweetRawId}, Hashtags: {h.Hashtags}");
-                            await AppDbHelper<TweetRaw>.InsertOrUpdateHashtagsAsync(h);
+                            tasksItems.Add(hashtags.Skip(take * p++).Take(take).ToList());
                         }
+                        foreach (var items in hashtags.Skip(take * p++).Take(take))
+                        {
+
+                        }
+                        var tasks = tasksItems.Select((x, i) => StoreHashtags(x,i));
+                        await Task.WhenAll(tasks);
+
                     }
 
                 } while (!response.Equals("0"));
@@ -103,9 +109,17 @@ namespace Degree.Seed
             {
 
             }
-            
 
-           
+
+
+        }
+        private static async Task StoreHashtags(List<TweetHashtags> hashtags, int index)
+        {
+                foreach (var h in hashtags.Select((x, i) => new { item = x, index = i }))
+                {
+                    Console.WriteLine($"Thread:{index}. Item: {h.index}. Insert in TwId: {h.item.TweetRawId}, Hashtags: {h.item.Hashtags}");
+                    await AppDbHelper<TweetRaw>.InsertOrUpdateHashtagsAsync(h.item);
+                }
         }
         private static async Task StoreTweet(string path, int nThread)
         {

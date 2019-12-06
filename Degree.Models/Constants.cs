@@ -10,6 +10,8 @@ namespace Degree.Models
             "#Cirnnà",
             "#FamigliaArcobaleno",
             "#CongressoMondialeDelleFamiglie",
+            "#CongressoDelleFamiglie",
+            "#Cirinnà",
             "#WCFVerona",
             "#WCF",
             "#NoWCFVerona",

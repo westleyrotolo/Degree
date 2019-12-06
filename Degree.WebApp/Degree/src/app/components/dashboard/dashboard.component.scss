@@ -1,0 +1,35 @@
+.main {
+    background-color: #2c3e50;
+}
+.countries {
+    background-color:transparent;
+    fill: #34495e;
+    stroke: #7f8c8d;
+    stroke-width: 0.5px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+}
+.countries-hover:hover {
+    background-color: transparent;
+    fill: white;
+    stroke: black;
+    stroke-width: 0.5px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+
+.states :hover {
+    fill: red;
+  }
+  
+  .state-borders {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 0.5px;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    pointer-events: none;
+  }
+  

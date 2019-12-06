@@ -104,14 +104,22 @@ namespace Degree.AppDbContext
 
         public static async Task<TweetHashtags> InsertOrUpdateHashtagsAsync(TweetHashtags hashtags)
         {
-            using (var context = new AppDbContext())
+            try
             {
-                if (context.TweetsHashtags.Count(x => x.TweetRawId == hashtags.Id && x.Hashtags == hashtags.Hashtags) == 0)
-                {
 
-                    await context.AddAsync(hashtags);
-                    await context.SaveChangesAsync();
+                using (var context = new AppDbContext())
+                {
+                    if (context.TweetsHashtags.Count(x => x.TweetRawId == hashtags.TweetRawId && x.Hashtags == hashtags.Hashtags) == 0)
+                    {
+
+                        await context.AddAsync(hashtags);
+                        await context.SaveChangesAsync();
+                    }
+                    return hashtags;
                 }
+            }
+            catch (Exception ex)
+            {
                 return hashtags;
             }
 

@@ -1,6 +1,41 @@
 /* You can add global styles to this file, and also import other style files */
-
+@import "~leaflet/dist/leaflet.css";
 html, body, .app { min-height: 100vh;background-color:#efefef; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;}
+/*
+.countries {
+    background-color:transparent;
+    fill: #34495e;
+    stroke: #7f8c8d;
+    stroke-width: 0.5px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+}
+.countries:hover {
+    background-color: transparent;
+    fill: white;
+    stroke: black;
+    stroke-width: 0.5px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+*/
 
-
+.countries :hover {
+    stroke: #333;
+    fill: white;
+  }
+  .countries {
+    stroke: #333;
+    fill:#34495e;
+  }
+  .countries-borders {
+    fill: none;
+    stroke: #333;
+    stroke-width: 0.5px;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    pointer-events: none;
+  }
+  
