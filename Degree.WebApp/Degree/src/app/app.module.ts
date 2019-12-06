@@ -20,7 +20,6 @@ import { TweetListComponent } from './components/tweet-list/tweet-list.component
 import { RouterModule } from '@angular/router';
 import { AppRoutes } from 'src/app.routes';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
-import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 @NgModule({
   declarations: [
     AppComponent,
@@ -42,7 +41,6 @@ import { LeafletModule } from '@asymmetrik/ngx-leaflet';
     NgCircleProgressModule,
     MatChipsModule,
     MatSelectModule,
-    LeafletModule.forRoot(),
     NgxMasonryModule,
     Ng4LoadingSpinnerModule.forRoot()
   ],  

@@ -9,6 +9,7 @@ using Degree.Models;
 using Degree.Models.Dto;
 using Degree.Models.WebApi;
 using Degree.Models.Twitter;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Degree.WebApi.Controllers
 {
@@ -60,6 +61,15 @@ namespace Degree.WebApi.Controllers
             {
                 return null;
             }
+        }
+     
+    }
+    public class NotifyHub : Hub
+    {
+        public async Task Send(TweetRaw tweetRaw)
+        {
+            
+            await Clients.All.SendAsync("broadcastMessage", tweetRaw);
         }
     }
 }

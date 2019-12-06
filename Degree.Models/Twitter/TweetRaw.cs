@@ -51,6 +51,10 @@ namespace Degree.Models
         [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
         public long Id { get; set; }
 
+        [JsonIgnore]
+        [NotMapped]
+        public dynamic PlaceObj { get; set; }
+
         [JsonProperty("created_at")]
         public DateTime CreatedAt { get; set; }
         [JsonIgnore]
