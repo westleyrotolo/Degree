@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Degree.Models.Dto;
 using Degree.Models.WebApi;
 using Degree.Models.Twitter;
+using System.Text.Json.Serialization;
 
 namespace Degree.AppDbContext
 {
@@ -22,7 +23,7 @@ namespace Degree.AppDbContext
                 if (typeof(T) == typeof(User))
                 {
                     var user = (User)(object)obj;
-                    exist = context.Users.Count(x=>x.Id == user.Id) > 0;
+                    exist = context.Users.Count(x => x.Id == user.Id) > 0;
                 }
                 else if (typeof(T) == typeof(TweetRaw))
                 {
@@ -49,7 +50,7 @@ namespace Degree.AppDbContext
                     if (typeof(T) == typeof(TweetRaw))
                     {
                         var tweet = ((TweetRaw)(object)obj);
-                        if (tweet.ExtendedTweet!=null)
+                        if (tweet.ExtendedTweet != null)
                             context.Entry<ExtendedTweet>(((TweetRaw)(object)obj).ExtendedTweet).State = EntityState.Detached;
                         if (tweet.User != null)
                             context.Entry<User>(((TweetRaw)(object)obj).User).State = EntityState.Detached;
@@ -78,7 +79,7 @@ namespace Degree.AppDbContext
                 return obj;
             }
         }
-    
+
         public static async Task<TweetSentiment> InsertOrUpdateSentimentAsync(TweetSentiment tweetSentiment)
         {
             using (var context = new AppDbContext())
@@ -102,6 +103,27 @@ namespace Degree.AppDbContext
 
         }
 
+        public static async Task<bool> InsertOrUpdateGeoUsersAsync(GeoUser geoUser)
+        {
+            try
+            {
+
+                using (var context = new AppDbContext())
+                {
+                    if (context.GeoUsers.Count(x => x.UserId == geoUser.UserId && x.Id == geoUser.Id) == 0)
+                    {
+
+                        await context.AddAsync(geoUser);
+                        await context.SaveChangesAsync();
+                    }
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
         public static async Task<TweetHashtags> InsertOrUpdateHashtagsAsync(TweetHashtags hashtags)
         {
             try
@@ -131,7 +153,7 @@ namespace Degree.AppDbContext
             {
                 var hashtags = context.TweetsHashtags
                    .GroupBy(h => h.Hashtags)
-                   .Select(h => new HashtagsCount {  Hashtags = h.Key, Count = h.Count() })
+                   .Select(h => new HashtagsCount { Hashtags = h.Key, Count = h.Count() })
                    .ToList();
                 return hashtags;
             }
@@ -143,6 +165,7 @@ namespace Degree.AppDbContext
             {
                 var items = context.TweetsRaw
                 .Include(x => x.User)
+                .Include(x => x.GeoUsers)
                 .Include(x => x.TweetSentiment)
                 .ThenInclude(x => x.Sentences)
                 .ToList();
@@ -155,15 +178,171 @@ namespace Degree.AppDbContext
             using (var context = new AppDbContext())
             {
                 var items = context.TweetsRaw.Where(t => !t.IsRetweetStatus)
-                .Include(x=>x.User)
-                .Include(x=>x.TweetSentiment)
+                .Include(x => x.User)
+                .Include(x => x.GeoUsers)
+                .Include(x => x.TweetSentiment)
                 .ThenInclude(x => x.Sentences)
                 .ToList();
                 return items;
             }
         }
 
-        public static List<TweetDto>FetchContains(string[] Hashtags,int page=0,int itemPerPage=0, bool skipRetweet=false, OrderSentiment  orderSentiment = OrderSentiment.NoOrder)
+        public static List<UserDto> MoreActives(int skip=0, int take=0)
+        {
+            var query = "SELECT u.ScreenName, u.Name, u.ProfileImage, count(*) as Statuses, 0 as Favorites, 0 as Retweets from users as u inner join tweetsraw t on t.UserId = u.Id  where t.Lang = \"it\" group by u.Id order by Statuses desc;";
+            using (var context = new AppDbContext())
+            {
+                var items = context.UserDto.FromSqlRaw(query).ToList();
+                if (take == 0 &&
+                    skip == 0)
+                    return items.ToList();
+                else
+                {
+                    return items.Skip(skip).Take(take).ToList();
+                }
+            }
+        }
+
+        public static List<UserDto> MoreRetweeted(int skip = 0, int take = 0)
+        {
+            var query = "SELECT u.ScreenName, u.Name, u.ProfileImage, sum(t.RetweetCount) as Retweets, 0 as Favorites, 0 as Statuses from users as u inner join tweetsraw t on t.UserId = u.Id where t.Lang = \"it\" group by u.Id order by Retweets desc;";
+            using (var context = new AppDbContext())
+            {
+
+                var items = context.UserDto.FromSqlRaw(query).ToList();
+                if (take == 0 && skip == 0)
+                    return items.ToList();
+                else
+                {
+                    return items.Skip(skip).Take(take).ToList();
+                }
+            }
+        }
+
+        public static List<UserDto> MoreFavorites(int skip = 0, int take = 0)
+        {
+            var query = "SELECT u.ScreenName, u.Name, u.ProfileImage, sum(t.FavoriteCount) as Favorites, 0 as Retweets, 0 as Statuses from users as u inner join tweetsraw as t on t.UserId = u.Id where t.Lang = \"it\" group by u.Id order by Favorites desc;";
+            using (var context = new AppDbContext())
+            {
+
+                var items = context.UserDto.FromSqlRaw(query).ToList();
+                if (take == 0 && skip == 0)
+                    return items.ToList();
+                else
+                {
+                    return items.Skip(skip).Take(take).ToList();
+                }
+            }
+        }
+        /*
+         *
+         *SELECT 
+    COUNT(*), 
+    AVG(s.PositiveScore), 
+    AVG(s.NeutralScore), 
+    AVG(s.NegativeScore), 
+    SUM(s.Sentiment="Positive") AS PositiveLabel,
+    SUM(s.Sentiment="Neutral") AS NeutralLabel,
+    SUM(s.Sentiment="Mixed") AS MixedLabel,
+    SUM(s.Sentiment="Negative") AS NegativeLabel
+FROM
+    degree.tweetsraw as t
+INNER JOIN 
+    degree.tweetssentiment as s ON COALESCE(t.RetweetedStatusId, t.Id) = s.TweetRawId
+WHERE LOWER(t.text) LIKE '%%'
+         */
+        public static WordSentiment WordSentiment(string word)
+        {
+            using (var context = new AppDbContext())
+            {
+                var item = (from t in context.TweetsRaw
+                            join s in context.TweetsSentiment on (t.RetweetedStatusId ?? t.Id) equals s.TweetRawId
+                            where t.Text.ToLower().Contains(word)
+                            group t by 1 into g
+                            select new WordSentiment
+                            {
+                                Tweets = g.Count(),
+                                MixedLabel = g.Count(x => x.TweetSentiment.Sentiment == DocumentSentimentLabel.Mixed),
+                                PositiveLabel = g.Count(x => x.TweetSentiment.Sentiment == DocumentSentimentLabel.Positive),
+                                NegativeLabel = g.Count(x => x.TweetSentiment.Sentiment == DocumentSentimentLabel.Negative),
+                                NeutralLabel = g.Count(x => x.TweetSentiment.Sentiment == DocumentSentimentLabel.Neutral),
+                                AvgPositiveScore = g.Average(x=>x.TweetSentiment.PositiveScore),
+                                AvgNegativeScore = g.Average(x=>x.TweetSentiment.NegativeScore),
+                                AvgNeutralScore = g.Average(x=>x.TweetSentiment.NeutralScore)
+                            }).FirstOrDefault() ;
+                return item;
+            }
+        }
+
+        public static List<User> FetchUsers()
+        {
+            using (var context = new AppDbContext())
+            {
+                var items = context.Users.ToList();
+                return items;
+            }
+        }
+        public static List<AvgHashtagSentiment> AvgHashtags()
+        {
+            using (var context = new AppDbContext())
+            {
+                var avgHashtags = new List<AvgHashtagSentiment>();
+                var items = context.TweetsRaw
+                .Include(x => x.User)
+                .Include(x => x.GeoUsers)
+                .Include(x => x.TweetSentiment)
+                .ThenInclude(x => x.Sentences)
+                .ToList();
+                var hashtags = new List<string>() { "ALL" };
+                hashtags.AddRange(Models.Constants.Hashtags);
+                foreach (var h in hashtags)
+                {
+                    var avg = GroupedHashtagSentiment(ref items, h);
+                    avgHashtags.Add(avg);
+                }
+                return avgHashtags;
+
+            }
+        }
+        private static AvgHashtagSentiment GroupedHashtagSentiment(ref List<TweetRaw> tweets, string hashtags)
+        {
+            var avg =new AvgHashtagSentiment();
+            avg.Hashtags = hashtags;
+            DateTime startDate = new DateTime(2019, 3, 29, 7, 0, 0);
+            DateTime endDate = new DateTime(2019, 3, 31, 23, 59, 59);
+            while (startDate < endDate)
+            {
+                var toDate = startDate.AddHours(1);
+                avg.AvgSentiments.Add(new AvgSentiment
+                {
+                    FromDate = startDate,
+                    ToDate = toDate
+                });
+                startDate = toDate;
+            }
+            foreach (var tweet in tweets)
+            {
+                if (tweet.TweetsHashtags.Count(x => x.Hashtags == hashtags) > 0 || hashtags == "ALL")
+                {
+                    var avgSentiment = avg.AvgSentiments
+                        .FirstOrDefault(x => x.FromDate >= tweet.CreatedAt && x.ToDate <= tweet.CreatedAt);
+                    if (avgSentiment != null)
+                    {
+                        var tweetSentiment = tweet.TweetSentiment != null ? tweet.TweetSentiment : tweets.FirstOrDefault(x => x.Id == tweet.RetweetedStatusId)?.TweetSentiment;
+                        if (tweetSentiment != null)
+                        {
+                            avgSentiment.Tweets += 1;
+                            avgSentiment.AddLabel(tweetSentiment.Sentiment.ToString());
+                            avgSentiment.PositivesScore.Add(tweetSentiment.PositiveScore);
+                            avgSentiment.NegativesScore.Add(tweetSentiment.NegativeScore);
+                            avgSentiment.NeutralsScore.Add(tweetSentiment.NeutralScore);
+                        }
+                    }
+                }
+            }
+            return avg;
+        }
+        public static List<TweetDto> FetchContains(string[] Hashtags, int page = 0, int itemPerPage = 0, bool skipRetweet = false, OrderSentiment orderSentiment = OrderSentiment.NoOrder)
         {
             using (var context = new AppDbContext())
             {
@@ -183,9 +362,9 @@ namespace Degree.AppDbContext
                                     ? x.ReplyCount : (orderSentiment == OrderSentiment.Retweet
                                     ? x.RetweetCount : (orderSentiment == OrderSentiment.Favorite
                                     ? x.FavoriteCount : 1)))
-                .ThenByDescending(x=>x.CreatedAt)
+                .ThenByDescending(x => x.CreatedAt)
                 .Skip(page * itemPerPage)
-                .Take(itemPerPage)    
+                .Take(itemPerPage)
                 .ToList();
                 var dtos = items.Select((x) =>
                 new TweetDto
@@ -227,12 +406,19 @@ namespace Degree.AppDbContext
                     }
                     ).ToList() : null,
                     Hashtags = (x.TweetsHashtags != null) ?
-                    x.TweetsHashtags.Select((h) => h.Hashtags).ToList() : null
+                        x.TweetsHashtags.Select((h) => h.Hashtags).ToList() : null,
+                    GeoCoordinate = (x.GeoUsers != null && x.GeoUsers.Count > 0) ?
+                                    new GeoCoordinateDto
+                                    {
+                                        Lat = x.GeoUsers[0].Lat,
+                                        Lon = x.GeoUsers[0].Lon,
+                                        GeoName = x.GeoUsers[0].DisplayName
+                                    } : null
                 }).ToList();
                 return dtos;
 
             }
-        }   
+        }
 
         public static List<HashtagsGrouped> GroupSentimentByHashtags(bool withRetweet = true)
         {
@@ -240,19 +426,19 @@ namespace Degree.AppDbContext
             var query = $"SELECT h.Hashtags, COUNT(*) AS TweetCount, AVG(s.PositiveScore) AS PositiveScore, AVG(s.NeutralScore) AS NegativeScore, AVG(s.NegativeScore) AS NegativeScore, SUM(s.Sentiment=\"Positive\") AS PositiveLabel, SUM(s.Sentiment=\"Neutral\") AS NeutralLabel, SUM(s.Sentiment=\"Mixed\") AS MixedLabel, SUM(s.Sentiment=\"Negative\") AS NegativeLabel FROM degree.tweetshashtags AS h INNER JOIN degree.tweetsraw AS t ON h.TweetRawId = ${withRetweetStr} INNER JOIN degree.tweetssentiment as s ON {withRetweetStr} = s.TweetRawId GROUP BY h.Hashtags";
             using (var context = new AppDbContext())
             {
-               var hashtagsGrounped = context
-                .Set<HashtagsGrouped>()
-                .FromSqlRaw(query)
-                .ToList();
+                var hashtagsGrounped = context
+                 .Set<HashtagsGrouped>()
+                 .FromSqlRaw(query)
+                 .ToList();
                 return hashtagsGrounped;
             }
-            
+
         }
 
         private static bool ContainsText(string[] Hashtags, string Tweet)
         {
 
-            foreach(var h in Hashtags)
+            foreach (var h in Hashtags)
             {
                 if (Tweet.ToLower().Contains(h.ToLower()))
                 {
@@ -307,5 +493,6 @@ namespace Degree.AppDbContext
             }
         }
     }
+    
 
 }

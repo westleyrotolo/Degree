@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Degree.Models.Twitter;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -57,15 +58,6 @@ namespace Degree.Models
 
         [JsonProperty("created_at")]
         public DateTime CreatedAt { get; set; }
-        [JsonIgnore]
-        [NotMapped]
-        public int CreatedAtInt
-        {
-            get
-            {
-               return int.Parse(CreatedAt.ToString("yyyyMMdd"));
-            }
-        }
 
         [JsonProperty("text")]
         public string Text { get; set; }
@@ -147,7 +139,10 @@ namespace Degree.Models
         public TweetSentiment TweetSentiment { get; set; }
 
         [JsonIgnore]
-        public List<TweetHashtags> TweetsHashtags { get; set; }
+        public List<TweetHashtags> TweetsHashtags { get; set; } = new List<TweetHashtags>();    
+
+        [JsonIgnore]
+        public List<GeoUser> GeoUsers { get; set; } = new List<GeoUser>();
     }
     public class ExtendedTweet
     {
@@ -276,6 +271,8 @@ namespace Degree.Models
 
         [JsonIgnore]
         public List<TweetRaw> TweetRaws { get; set; }
+        [JsonIgnore]
+        public List<GeoUser> GeoUsers { get; set; }
 
     }
 }

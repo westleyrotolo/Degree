@@ -31,8 +31,16 @@ namespace Degree.Models.Dto
         public double NeutralScore { get; set; }
         public double NegativeScore { get; set; }
 
+        public GeoCoordinateDto GeoCoordinate { get; set; }
+
         public List<SentimentSentenceDto> SentimentSentence { get; set; }
         public List<string> Hashtags { get; set; }
+    }
+    public class GeoCoordinateDto
+    {
+        public double Lat { get; set; }
+        public double Lon { get; set; }
+        public string GeoName { get; set; }
     }
     public class SentimentSentenceDto
     {

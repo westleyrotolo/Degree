@@ -1,0 +1,41 @@
+.avatar {
+    vertical-align: middle;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center center;
+    margin-left: 3px;
+    margin-right: 3px;
+  }
+  .padding-card {
+      padding: 3px!important;
+  }
+  .margin-card {
+      margin: 3px!important;
+  }
+  .text-header {
+      width: 230px;
+  }
+  .title {
+      color:#333;
+      font-weight: 500;
+      font-size: 14px;
+  }
+  .subtitle {
+      color: rgba(0,0,0,.54);
+      font-size: 12px;
+      font-weight: 400px;
+      
+  }
+  .middle > * {
+    vertical-align: middle;
+  }
+  .badge {
+    height: 18px;
+    font-size: 12x;
+    margin-right: 3pxx;
+  }
+  .main {
+      background-color: white;
+  }

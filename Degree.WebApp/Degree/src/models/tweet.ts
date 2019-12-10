@@ -26,6 +26,12 @@ export interface Tweet {
     negativeScore:number
     sentimentSentences?: SentimentSentence[]
     hashtags?: string[]
+    geoCoordinate?: GeoCoordinate
+}
+export interface GeoCoordinate {
+    lat: number
+    lon: number
+    geoName: string
 }
 export interface SentimentSentence{
     sentiment:string;

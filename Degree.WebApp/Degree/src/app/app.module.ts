@@ -8,7 +8,7 @@ import { BaseHttpService } from 'src/services/base-http.service';
 import { TweetService } from 'src/services/tweet.service';
 import { HttpClientModule } from '@angular/common/http';
 import {
-  MatCardModule, MatChipsModule, MatChipList, MatSelectModule
+  MatCardModule, MatChipsModule, MatChipList, MatSelectModule, MatTableModule
 } from '@angular/material';
 import { NgxMasonryModule } from 'ngx-masonry';
 import { TweetCardComponent } from './components/tweet-card/tweet-card.component';
@@ -16,18 +16,26 @@ import { HashtagComponent } from './components/hashtag/hashtag.component';
 import { NgCircleProgressModule, CircleProgressComponent, CircleProgressOptions } from 'ng-circle-progress';
 import { PieSentimentComponent } from './components/pie-sentiment/pie-sentiment.component';
 import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
-import { TweetListComponent } from './components/tweet-list/tweet-list.component';
+import { TweetGridComponent } from './components/tweet-grid/tweet-grid.component';
 import { RouterModule } from '@angular/router';
 import { AppRoutes } from 'src/app.routes';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { ScrollToBottomDirective } from 'src/directives/scroll-to-bottom.directive';
+import { UserCardComponent } from './components/user-card/user-card.component';
+import { UserListComponent } from './components/user-list/user-list.component';
+import { TweetListComponent } from './components/tweet-list/tweet-list.component';
 @NgModule({
   declarations: [
     AppComponent,
+    ScrollToBottomDirective,
     TweetCardComponent,
     HashtagComponent,
     PieSentimentComponent,
-    TweetListComponent,
-    DashboardComponent
+    TweetGridComponent,
+    DashboardComponent,
+    UserCardComponent,
+    UserListComponent,
+    TweetListComponent
   ],
   entryComponents: [
     TweetCardComponent
@@ -40,6 +48,8 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
     MatCardModule,
     NgCircleProgressModule,
     MatChipsModule,
+    MatTableModule,
+    
     MatSelectModule,
     NgxMasonryModule,
     Ng4LoadingSpinnerModule.forRoot()

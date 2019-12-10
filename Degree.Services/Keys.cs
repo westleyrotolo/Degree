@@ -8,7 +8,7 @@ namespace Degree.Services
 
         public static void LoadKey()
         {
-            var root = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.Parent.FullName;
+            var root = Directory.GetParent(Environment.CurrentDirectory).FullName;
             var path = Path.Combine(root, "config.txt");
             string text = File.ReadAllText(path);
             var properties = text.Replace("\r", "").Split("\n")

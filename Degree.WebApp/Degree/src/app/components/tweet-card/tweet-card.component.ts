@@ -1,10 +1,30 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Tweet } from 'src/models/tweet';
+import { trigger, state, style, transition, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-tweet-card',
   templateUrl: './tweet-card.component.html',
-  styleUrls: ['./tweet-card.component.scss']
+  styleUrls: ['./tweet-card.component.scss'],
+  animations: [
+    trigger('openClose', [
+      // ...
+      state('open', style({
+        height: '200px',
+        opacity: 1,
+      })),
+      state('closed', style({
+        height: '100px',
+        opacity: 0.5,
+      })),
+      transition('* => closed', [
+        animate('1s')
+      ]),
+      transition('* => open', [
+        animate('2s')
+      ]),
+    ]),
+  ],
 })
 export class TweetCardComponent implements OnInit {
 

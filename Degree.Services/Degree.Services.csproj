@@ -15,5 +15,12 @@
     <Folder Include="TextAnalysis\" />
     <Folder Include="TextAnalysis\Azure\" />
     <Folder Include="TextAnalysis\Azure\Models\" />
+    <Folder Include="Location\" />
+    <Folder Include="Location\OpenStreetMap\" />
+    <Folder Include="Location\GoogleMaps\" />
+    <Folder Include="Location\GoogleMaps\Models\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Location\OpenStreetMap\OpenStreeMapHelper.xml" />
   </ItemGroup>
 </Project>

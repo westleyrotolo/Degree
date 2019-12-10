@@ -24,7 +24,7 @@ namespace Degree.WebApi.HostedService
 
             Task.Run(()=>
             {
-                TwitterApi.StreamTwitter(Update);
+                  TwitterApi.StreamTwitter(Update);
                 
             });
             return Task.CompletedTask;
@@ -37,7 +37,7 @@ namespace Degree.WebApi.HostedService
             return Task.CompletedTask;
         }
 
-        public void Update(Degree.Models.TweetRaw tweet)
+        public void Update(Degree.Models.Dto.TweetDto tweet)
         {
             _hubContext.Clients.All.SendAsync("broadcastMessage", tweet);
         }

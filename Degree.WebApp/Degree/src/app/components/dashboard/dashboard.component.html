@@ -1,4 +1,17 @@
 <div class="main">
-    <button class="btn btn-primary" (click)="goToWCF()">Go Tweet WCF</button>
-    <div id="map"></div>
+    <div class="row mx-auto">
+        <div #map id="map" class="card-margin map-tweet mat-elevation-z8"></div>
+        <app-tweet-list [style.height.px]="height" class="mat-elevation-z8 tweet-list card-margin"></app-tweet-list>
+        <app-user-list  [style.height.px]="height" class="mat-elevation-z8 user-list card-margin"></app-user-list>
+    </div>
 </div>
+
+
+
+<!--
+        <div #tweetsList class="card-margin tweet-list mat-elevation-z8 p-2" >
+            <div *ngFor="let tweet of tweets" class="my-3 my-animation">
+                <app-tweet-card class="my-3 mx-auto" [tweet]="tweet"></app-tweet-card>
+            </div>
+        </div>
+-->

@@ -14,6 +14,7 @@ using Newtonsoft.Json.Converters;
 using Degree.AppDbContext;
 using Degree.Services.TextAnalysis.Azure;
 using Degree.Services;
+using Degree.Models.Twitter;
 
 namespace Degree.Seed
 {
@@ -31,6 +32,7 @@ namespace Degree.Seed
                     Console.WriteLine("(S)tore Tweets in DB from files");
                     Console.WriteLine("(G)et sentiment from Tweets");
                     Console.WriteLine("(E)xtract Hashtag");
+                    Console.WriteLine("(C)oordinate Users");
                     Console.Write("Inserisci comando: ");
                     response = Console.ReadKey().KeyChar.ToString();
                     if (response.Equals("d", StringComparison.InvariantCultureIgnoreCase))
@@ -90,26 +92,98 @@ namespace Degree.Seed
                         int take = hashtags.Count / 4;
                         int p = 0;
                         var tasksItems = new List<List<TweetHashtags>>();
-                        for (int i = 0; i<4; i++)
+                        for (int i = 0; i < 4; i++)
                         {
                             tasksItems.Add(hashtags.Skip(take * p++).Take(take).ToList());
                         }
-                        foreach (var items in hashtags.Skip(take * p++).Take(take))
-                        {
-
-                        }
-                        var tasks = tasksItems.Select((x, i) => StoreHashtags(x,i));
+                        var tasks = tasksItems.Select((x, i) => StoreHashtags(x, i));
                         await Task.WhenAll(tasks);
 
                     }
+                    else if (response.Equals("c", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        var users = AppDbHelper<User>.FetchUsers();
+                        await FetchGeoUsers(users);
 
-                } while (!response.Equals("0"));
+                    }
+
+                    } while (!response.Equals("0"));
             }
             catch (Exception ex)
             {
 
             }
 
+
+
+        }
+        private static async Task FetchGeoUsers(List<User> users)
+        {
+            var GeoCoding = new Services.Location.GoogleMaps.GoogleMapsHelper();
+            Dictionary<string, string> Places = new Dictionary<string, string>();
+            foreach (var u in users.Where(x => !string.IsNullOrEmpty(x.Location)).Select((x, i) => new { item = x, index = i }))
+            {
+                List<GeoUser> GeoUsers = new List<GeoUser>();
+
+                try
+                {
+                    Console.WriteLine($"Item: {u.index}, User: {u.item.ScreenName}");
+                    if (Places.ContainsValue(u.item.Location.ToLower()))
+                    {
+                        var places = Places.Where(x => x.Value == u.item.Location.ToLower())
+                                .Select(x => x.Key)
+                                .ToList();
+                        List<GeoUser> temp = new List<GeoUser>();
+                        foreach (var g in GeoUsers)
+                        {
+                            if (places.Contains(g.Id))
+                            {
+
+                                Console.WriteLine($"{g.DisplayName} exist");
+                                var geoUser = new GeoUser
+                                {
+                                    Id = g.Id,
+                                    DisplayName = g.DisplayName,
+                                    Lat = g.Lat,
+                                    Lon = g.Lon,
+                                    Type = g.Type,
+                                    UserId = u.item.Id
+                                };
+                                temp.Add(geoUser);
+                            }
+                        }
+                        GeoUsers.AddRange(temp);
+                    }
+                    else
+                    {
+                        var geoUsers = await GeoCoding.GeoReverse(u.item.Location);
+                        geoUsers.ForEach(x =>
+                        {
+                            Places.TryAdd(x.Id, u.item.Location.ToLower());
+                            x.UserId = u.item.Id;
+                        }
+                        );
+                        Console.WriteLine($"Item: {u.index}, Founded: {geoUsers.Count}");
+                        GeoUsers.AddRange(geoUsers);
+
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"ERROR. {u.item.ScreenName}. Message: {ex.Message}");
+                }
+                await StoreGeoUsers(GeoUsers, u.index);
+            }
+
+        }
+        private static async Task StoreGeoUsers(List<GeoUser> geoUsers, int index)
+        {
+            foreach (var g in geoUsers.Select((x,i)=>new { geoUser = x, index = i }))
+            {
+                Console.WriteLine($"Thread:{index}, Item: {g.index}, Place: {g.geoUser.DisplayName}");
+                await AppDbHelper<GeoUser>.InsertOrUpdateGeoUsersAsync(g.geoUser);
+            }
 
 
         }

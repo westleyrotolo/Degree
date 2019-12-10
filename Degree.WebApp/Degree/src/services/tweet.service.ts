@@ -3,6 +3,7 @@ import { BaseHttpService } from './base-http.service';
 import { Observable } from 'rxjs';
 import { Tweet, HashtagsCount } from 'src/models/tweet';
 import { ApiRequest } from 'src/models/apiRequest';
+import { User } from 'src/models/user';
 
 @Injectable({
   providedIn: 'root'
@@ -10,14 +11,26 @@ import { ApiRequest } from 'src/models/apiRequest';
 export class TweetService {
  // readonly BASE_URL = 'https://degree-webapi.azurewebsites.net/TweetApi';
   readonly BASE_URL = 'https://localhost:5001/TweetApi';
-  constructor(private apiCLient: BaseHttpService) { }
+  constructor(private apiClient: BaseHttpService) { }
 
   fetchTweets(apiRequest: ApiRequest):Observable<Tweet[]>{
       const url = '/Search';
-      return this.apiCLient.post(apiRequest, this.BASE_URL + url);
+      return this.apiClient.post(apiRequest, this.BASE_URL + url);
   }
   fetchHashtags():Observable<HashtagsCount[]>{
     const url = '/GetHashtags';
-    return this.apiCLient.getData(this.BASE_URL + url);
+    return this.apiClient.getData(this.BASE_URL + url);
+  }
+  fetchUserMoreActives(take:number = 10, skip:number=0): Observable<User[]> {
+    const url =`/MoreActives?take=${take}&skip=${skip}`;
+    return this.apiClient.getData(this.BASE_URL + url);
+  } 
+  fetchUserMoreRetweets(take:number = 10, skip:number=0): Observable<User[]> {
+    const url = `/MoreRetweets?take=${take}&skip=${skip}`;
+    return this.apiClient.getData(this.BASE_URL+url);
+  }
+  fetchUserMoreFavorites(take:number =10, skip:number=0): Observable<User[]> {
+    const url = `/MoreFavorites?take=${take}&skip=${skip}`;
+    return this.apiClient.getData(this.BASE_URL+url);
   }
 }

@@ -1,0 +1,17 @@
+<div style="background-color: white;">
+    <div class="px-2 py-2" style="background-color: #ecf0f1;">
+        <mat-label>Visualizza</mat-label>
+        <mat-select [(value)]="select" name="select" (selectionChange)="orderChanged($event)">
+            <mat-option *ngFor="let label of userSelections" Selected [value]="label">
+                {{label}}
+            </mat-option>
+        </mat-select>
+    </div>
+    <div>
+    <div *ngFor="let user of users">
+        <app-user-card [type]="userType" [user]="user"></app-user-card>
+    </div>
+</div>
+</div>
+
+<ng4-loading-spinner> </ng4-loading-spinner>

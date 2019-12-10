@@ -1,12 +1,17 @@
+
+.tweet-card {
+    width: 320px;
+    margin: 18px auto;
+}
+.tweet-card {
+    max-width: 100%;
+}
 .pic-size {
     max-width: 50px;
     max-height: 50px;
 }
 .alert {
      margin-bottom: 0!important
-}
-.tweet-card {
-    min-width: 100%;
 }
 .nopadding {
     margin: 0!important;

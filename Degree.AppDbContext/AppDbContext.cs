@@ -1,4 +1,6 @@
 ﻿using Degree.Models;
+using Degree.Models.Dto;
+using Degree.Models.Twitter;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -20,8 +22,18 @@ namespace Degree.AppDbContext
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
+
             modelBuilder.Entity<TweetRaw>().HasKey(x => x.Id);
             modelBuilder.Entity<TweetSentiment>().HasKey(x => x.TweetRawId);
+            modelBuilder.Entity<GeoUser>().HasKey(x => new { x.Id, x.UserId });
+            modelBuilder.Entity<UserDto>().HasNoKey();
+
+            modelBuilder.Entity<User>()
+            .HasMany(x => x.GeoUsers)
+            .WithOne(x => x.User)
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<TweetRaw>()
             .HasOne(e => e.TweetSentiment)
@@ -122,6 +134,9 @@ namespace Degree.AppDbContext
         public DbSet<TweetSentiment> TweetsSentiment { get; set; }
         public DbSet<TweetSentenceSentiment> SentenceSentiments { get; set; }
         public DbSet<TweetHashtags> TweetsHashtags { get; set; }
+        public DbSet<GeoUser> GeoUsers { get; set; }
+
+        public DbSet<UserDto> UserDto { get; set; }
 
     }
 }

@@ -1,5 +1,5 @@
 .main {
-    background-color: #2c3e50;
+    background-color:#efefef;
 }
 .countries {
     background-color:transparent;
@@ -18,18 +18,35 @@
     stroke-linecap: round;
     stroke-linejoin: round;
 }
-
-
-.states :hover {
-    fill: red;
+.tweet-list {
+    margin-top: 24px;
+    margin-bottom: 24px;
+    background-color: #ecf0f1; 
+    width: 350px; 
+    overflow-y: scroll; 
+}
+.map-tweet {
+  background-color:  #F0F8FF;
+  width: 500px;
+  //background-color:  #2c3e50;
+}
+@keyframes MyAnimation {
+    0% {
+      margin-top: -50px;
+    }
+    100% {
+      margin-top: 0;
+    } 
   }
   
-  .state-borders {
-    fill: none;
-    stroke: #fff;
-    stroke-width: 0.5px;
-    stroke-linejoin: round;
-    stroke-linecap: round;
-    pointer-events: none;
+  .my-animation {
+    animation: MyAnimation .3s;
   }
-  
+  .card-margin {
+    margin: 24px;
+  }
+  .user-list {
+    width: 350px;
+    background-color: #ffffff; 
+
+  }
