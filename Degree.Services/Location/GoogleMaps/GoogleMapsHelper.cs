@@ -14,7 +14,7 @@ namespace Degree.Services.Location.GoogleMaps
         {
             try
             {
-
+                place = place.Replace(" ", "%20");
                 var url = $"https://maps.googleapis.com/maps/api/geocode/json?address={place}&key=AIzaSyBmStPxH7X6GV1zlLBfnsbE6mLX1R7e2j4";
                 using (var client = new HttpClient())
                 {

@@ -115,6 +115,19 @@ namespace Degree.WebApi.Controllers
                 return null;
             }
         }
+        [HttpGet("TagCloud")]
+        public IEnumerable<TagCloud> TagClouds()
+        {
+            try
+            {
+                var tagClouds = AppDbHelper<TweetRaw>.TagWord();
+                return tagClouds;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
 
         [HttpGet("GetGroupedHashtags")]
         public IEnumerable<HashtagsGrouped> GetGroupedHashtagsBySentiment()

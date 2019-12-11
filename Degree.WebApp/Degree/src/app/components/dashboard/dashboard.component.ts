@@ -3,10 +3,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import * as d3 from 'd3';
 import * as t from 'topojson';
-import { SignalRService } from 'src/services/signal-r.service';
 import { Subscription } from 'rxjs';
 import { Tweet } from 'src/models/tweet';
 import { ScrollToBottomDirective } from 'src/directives/scroll-to-bottom.directive';
+import { TweetService } from 'src/services/tweet.service';
+import { WordCloud } from 'src/models/wordCloud';
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -20,13 +21,12 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   mapDiv?: ElementRef<HTMLElement>;;
   @ViewChild('tweetsList', { static: false })
   tweetsList?: ElementRef<HTMLElement>;;
-  private signalRSubscription: Subscription;
   tweets: Array<Tweet> = new Array<Tweet>();
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private http: HttpClient,
-    private signalrService: SignalRService) {
+    private tweetService: TweetService) {
 
   }
 
@@ -39,21 +39,20 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   goToWCF() {
     this.router.navigate(["/wcf-tweets"])
   }
+  wordData: WordCloud[] = [];
+  maxCount: number = 0;
   height = 600;
   coord: [{ lat, lon }] = [{ lat: 40.35, lon: 14.9833333 }]
   ngAfterViewInit() {
+    const _this = this;
     console.log('test:', this.mapDiv);
-    this.italyMap();
-    this.signalRSubscription = this.signalrService.getMessage().subscribe(
-      (tweet: Tweet) => {
-        console.log(tweet);
-        this.tweets.unshift(tweet);
-        if (tweet.geoCoordinate && tweet.geoCoordinate.lat && tweet.geoCoordinate.lon) {
-          var coord: [{ lat: number, lon: number }] = [{ lat: tweet.geoCoordinate.lat, lon: tweet.geoCoordinate.lon }];
-          this.addPin(coord);
-        }
-      });
+      this.tweetService.fetchTagCloud().subscribe((resp: WordCloud[])=>{
+        _this.wordData = resp;
+        _this.maxCount = _this.wordData [0].count;
+         console.log('data',_this.wordData)
+      })
   }
+  
   public innerWidth: any;
   public innerHeight: any;
   ngOnInit() {
@@ -149,8 +148,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       .remove();
   }
   ngOnDestroy(): void {
-    this.signalrService.disconnect();
-    this.signalRSubscription.unsubscribe();
   }
 
 }

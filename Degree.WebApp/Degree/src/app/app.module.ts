@@ -8,7 +8,7 @@ import { BaseHttpService } from 'src/services/base-http.service';
 import { TweetService } from 'src/services/tweet.service';
 import { HttpClientModule } from '@angular/common/http';
 import {
-  MatCardModule, MatChipsModule, MatChipList, MatSelectModule, MatTableModule
+  MatCardModule, MatChipsModule, MatChipList, MatSelectModule, MatTableModule, MatDialogModule
 } from '@angular/material';
 import { NgxMasonryModule } from 'ngx-masonry';
 import { TweetCardComponent } from './components/tweet-card/tweet-card.component';
@@ -24,6 +24,12 @@ import { ScrollToBottomDirective } from 'src/directives/scroll-to-bottom.directi
 import { UserCardComponent } from './components/user-card/user-card.component';
 import { UserListComponent } from './components/user-list/user-list.component';
 import { TweetListComponent } from './components/tweet-list/tweet-list.component';
+import { WordCloudComponent, DialogOverview } from './components/word-cloud/word-cloud.component';
+import { WordSentimentComponent } from './components/word-sentiment/word-sentiment.component';
+import { ExperimentalComponent } from './components/experimental/experimental.component';
+import { RadialSentimentComponent } from './components/radial-sentiment/radial-sentiment.component';
+import { ChartsModule } from 'ng2-charts';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -35,21 +41,28 @@ import { TweetListComponent } from './components/tweet-list/tweet-list.component
     DashboardComponent,
     UserCardComponent,
     UserListComponent,
-    TweetListComponent
+    TweetListComponent,
+    WordCloudComponent,
+    WordSentimentComponent,
+    DialogOverview,
+    ExperimentalComponent,
+    RadialSentimentComponent
   ],
   entryComponents: [
-    TweetCardComponent
+    TweetCardComponent,
+    DialogOverview
   ],
   imports: [
     RouterModule.forRoot(AppRoutes),
     BrowserModule,
+    ChartsModule,
     BrowserAnimationsModule,
     HttpClientModule,
     MatCardModule,
     NgCircleProgressModule,
     MatChipsModule,
     MatTableModule,
-    
+    MatDialogModule,
     MatSelectModule,
     NgxMasonryModule,
     Ng4LoadingSpinnerModule.forRoot()

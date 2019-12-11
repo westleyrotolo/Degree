@@ -1,0 +1,33 @@
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title title">{{wordSentiment.word}}</h5>
+        <h5 class="tweets" style="float:left">Tweets {{wordSentiment.tweets}}</h5>
+    </div>
+    <div class="card-body">
+        <div class="row justify-content-center px-3 py-2">
+            <div class="col-4">
+                <app-pie-sentiment [label]="'Positive'" [percent]="wordSentiment.avgPositiveScore"></app-pie-sentiment>
+            </div>
+            <div class="col-4">
+                <app-pie-sentiment [label]="'Neutral'" [percent]="wordSentiment.avgNeutralScore"></app-pie-sentiment>
+            </div>
+            <div class="col-4">
+                <app-pie-sentiment [label]="'Negative'" [percent]="wordSentiment.avgNegativeScore"></app-pie-sentiment>
+            </div>
+        </div>
+        <div class="row justify-content-center px-3 py-2">
+            <div class="col-4">
+                <div class="h5">{{wordSentiment.positiveLabel}}</div>
+                <div class="h6">Tweets Positive</div>
+            </div>
+            <div class="col-4">
+                <div class="h5">{{wordSentiment.neutralLabel}}</div>
+                <div class="h6">Tweets Neutral</div>
+            </div>
+            <div class="col-4">
+                <div class="h5">{{wordSentiment.negativeLabel}}</div>
+                <div class="h6">Tweets Negative</div>
+            </div>
+        </div>
+    </div>
+</div>

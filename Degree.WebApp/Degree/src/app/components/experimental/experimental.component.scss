@@ -1,0 +1,51 @@
+.main {
+    background-color:#efefef;
+}
+.countries {
+    background-color:transparent;
+    fill: #34495e;
+    stroke: #7f8c8d;
+    stroke-width: 0.5px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+}
+.countries-hover:hover {
+    background-color: transparent;
+    fill: white;
+    stroke: black;
+    stroke-width: 0.5px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.tweet-list {
+    margin-top: 24px;
+    margin-bottom: 24px;
+    background-color: #ecf0f1; 
+    width: 350px; 
+    overflow-y: scroll; 
+}
+.map-tweet {
+  background-color:  #F0F8FF;
+  //background-color:  #2c3e50;
+}
+@keyframes MyAnimation {
+    0% {
+      margin-top: -50px;
+    }
+    100% {
+      margin-top: 0;
+    } 
+  }
+  
+  .my-animation {
+    animation: MyAnimation .3s;
+  }
+  .card-margin {
+    margin: 24px;
+  }
+  .user-list {
+    width: 350px;
+    background-color: #ffffff; 
+
+  }

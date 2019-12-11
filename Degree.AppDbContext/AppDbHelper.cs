@@ -165,11 +165,35 @@ namespace Degree.AppDbContext
             {
                 var items = context.TweetsRaw
                 .Include(x => x.User)
-                .Include(x => x.GeoUsers)
+                .ThenInclude(x => x.GeoUsers)
                 .Include(x => x.TweetSentiment)
                 .ThenInclude(x => x.Sentences)
                 .ToList();
                 return items;
+            }
+        }
+        public static List<TagCloud>    TagWord()
+        {
+            using (var context = new AppDbContext())
+            {
+                var items = context.TweetsRaw
+                .ToList();
+                List<string> words = new List<string>();
+                foreach (var tweet in items)
+                {
+                    var _words = tweet.Text.Replace("  "," ").Replace("https://t","").Replace("questo","").Replace("\n","").Replace("perché","").Replace("#","").Split(new char[] { ',', '.', ';', '!', '?', ' ' }).Where(x => x.Length > 5).Select(x => x.ToLower());
+                    words.AddRange(_words);
+                }
+                var tagWorlds = from w in words
+                                group w by w into ws
+                                orderby ws.Count() descending
+                                select new TagCloud
+                                {
+                                    Word = ws.Key,
+                                    Count = ws.Count()
+                                };
+                return tagWorlds.Take(50).ToList();
+                            
             }
         }
 
@@ -179,7 +203,7 @@ namespace Degree.AppDbContext
             {
                 var items = context.TweetsRaw.Where(t => !t.IsRetweetStatus)
                 .Include(x => x.User)
-                .Include(x => x.GeoUsers)
+                .ThenInclude(x => x.GeoUsers)
                 .Include(x => x.TweetSentiment)
                 .ThenInclude(x => x.Sentences)
                 .ToList();
@@ -234,43 +258,30 @@ namespace Degree.AppDbContext
                 }
             }
         }
-        /*
-         *
-         *SELECT 
-    COUNT(*), 
-    AVG(s.PositiveScore), 
-    AVG(s.NeutralScore), 
-    AVG(s.NegativeScore), 
-    SUM(s.Sentiment="Positive") AS PositiveLabel,
-    SUM(s.Sentiment="Neutral") AS NeutralLabel,
-    SUM(s.Sentiment="Mixed") AS MixedLabel,
-    SUM(s.Sentiment="Negative") AS NegativeLabel
-FROM
-    degree.tweetsraw as t
-INNER JOIN 
-    degree.tweetssentiment as s ON COALESCE(t.RetweetedStatusId, t.Id) = s.TweetRawId
-WHERE LOWER(t.text) LIKE '%%'
-         */
+
+
         public static WordSentiment WordSentiment(string word)
         {
             using (var context = new AppDbContext())
             {
-                var item = (from t in context.TweetsRaw
-                            join s in context.TweetsSentiment on (t.RetweetedStatusId ?? t.Id) equals s.TweetRawId
-                            where t.Text.ToLower().Contains(word)
-                            group t by 1 into g
-                            select new WordSentiment
-                            {
-                                Tweets = g.Count(),
-                                MixedLabel = g.Count(x => x.TweetSentiment.Sentiment == DocumentSentimentLabel.Mixed),
-                                PositiveLabel = g.Count(x => x.TweetSentiment.Sentiment == DocumentSentimentLabel.Positive),
-                                NegativeLabel = g.Count(x => x.TweetSentiment.Sentiment == DocumentSentimentLabel.Negative),
-                                NeutralLabel = g.Count(x => x.TweetSentiment.Sentiment == DocumentSentimentLabel.Neutral),
-                                AvgPositiveScore = g.Average(x=>x.TweetSentiment.PositiveScore),
-                                AvgNegativeScore = g.Average(x=>x.TweetSentiment.NegativeScore),
-                                AvgNeutralScore = g.Average(x=>x.TweetSentiment.NeutralScore)
-                            }).FirstOrDefault() ;
-                return item;
+                var items = from s in context.TweetsSentiment
+                            join t in context.TweetsRaw on s.TweetRawId equals (t.RetweetedStatusId ?? t.Id)
+                            where t.Text.ToLower().Contains(word.ToLower())
+                            select s;
+                var wordSentiment = new WordSentiment()
+                {
+                    Word = word,
+                    Tweets = items.Count(),
+                    AvgNegativeScore = items.Average(x => x.NegativeScore),
+                    AvgNeutralScore = items.Average(x => x.NeutralScore),
+                    AvgPositiveScore = items.Average(x => x.PositiveScore),
+                    MixedLabel = items.Count(x => x.Sentiment == DocumentSentimentLabel.Mixed),
+                    PositiveLabel = items.Count(x => x.Sentiment == DocumentSentimentLabel.Positive),
+                    NeutralLabel = items.Count(x => x.Sentiment == DocumentSentimentLabel.Neutral),
+                    NegativeLabel = items.Count(x => x.Sentiment == DocumentSentimentLabel.Negative),
+                };
+                   
+                return wordSentiment;
             }
         }
 
@@ -288,8 +299,6 @@ WHERE LOWER(t.text) LIKE '%%'
             {
                 var avgHashtags = new List<AvgHashtagSentiment>();
                 var items = context.TweetsRaw
-                .Include(x => x.User)
-                .Include(x => x.GeoUsers)
                 .Include(x => x.TweetSentiment)
                 .ThenInclude(x => x.Sentences)
                 .ToList();
@@ -300,7 +309,7 @@ WHERE LOWER(t.text) LIKE '%%'
                     var avg = GroupedHashtagSentiment(ref items, h);
                     avgHashtags.Add(avg);
                 }
-                return avgHashtags;
+                return avgHashtags.OrderBy(x=>x.AvgSentiments.Count).Take(8).ToList();
 
             }
         }
@@ -407,12 +416,12 @@ WHERE LOWER(t.text) LIKE '%%'
                     ).ToList() : null,
                     Hashtags = (x.TweetsHashtags != null) ?
                         x.TweetsHashtags.Select((h) => h.Hashtags).ToList() : null,
-                    GeoCoordinate = (x.GeoUsers != null && x.GeoUsers.Count > 0) ?
+                    GeoCoordinate = (x.User.GeoUsers != null && x.User.GeoUsers.Count > 0) ?
                                     new GeoCoordinateDto
                                     {
-                                        Lat = x.GeoUsers[0].Lat,
-                                        Lon = x.GeoUsers[0].Lon,
-                                        GeoName = x.GeoUsers[0].DisplayName
+                                        Lat = x.User.GeoUsers[0].Lat,
+                                        Lon = x.User.GeoUsers[0].Lon,
+                                        GeoName = x.User.GeoUsers[0].DisplayName
                                     } : null
                 }).ToList();
                 return dtos;

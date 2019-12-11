@@ -141,8 +141,6 @@ namespace Degree.Models
         [JsonIgnore]
         public List<TweetHashtags> TweetsHashtags { get; set; } = new List<TweetHashtags>();    
 
-        [JsonIgnore]
-        public List<GeoUser> GeoUsers { get; set; } = new List<GeoUser>();
     }
     public class ExtendedTweet
     {
@@ -151,14 +149,14 @@ namespace Degree.Models
         [ForeignKey("ExtendedTweet")]
         public long TweetRawId { get; set; }
 
+        public TweetRaw TweetRaw { get; set; }
+
         [JsonProperty("full_text", NullValueHandling = NullValueHandling.Ignore)]
         public string FullText { get; set; }
 
         [JsonProperty("display_text_range", NullValueHandling = NullValueHandling.Ignore)]
         public List<long> DisplayTextRange { get; set; }
-
-        [JsonIgnore]
-        public TweetRaw TweetRaw { get; set; }
+        
     }
     
     public class Place
@@ -272,7 +270,7 @@ namespace Degree.Models
         [JsonIgnore]
         public List<TweetRaw> TweetRaws { get; set; }
         [JsonIgnore]
-        public List<GeoUser> GeoUsers { get; set; }
+        public List<GeoUser> GeoUsers { get; set; } = new List<GeoUser>();
 
     }
 }

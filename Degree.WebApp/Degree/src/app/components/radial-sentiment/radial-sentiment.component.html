@@ -1,0 +1,5 @@
+<h3 style="text-align:center;" (click)="updateData()">Radar Chart</h3>
+<div style="display: block;">
+  <canvas #chart baseChart [datasets]="radarChartData" [options]="radarChartOptions" [labels]="radarChartLabels"
+  [chartType]="radarChartType"></canvas>
+</div>

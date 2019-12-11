@@ -1,0 +1,10 @@
+<div class="main">
+    <div class="row " style="margin: auto;">
+        <div #map id="map" class="card-margin map-tweet mat-elevation-z8"></div>
+        <div [style.height.px]="height" style="float: right; width: 330px;" class=" mat-elevation-z8 tweet-list card-margin">
+            <div *ngFor="let tweet of tweets">
+                <app-tweet-card [tweet]="tweet" style="margin: auto auto;"></app-tweet-card>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,38 @@
+
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title title h5">{{data.wordSentiment.word}}</span>
+            <span class="tweets h5" style="float:right">{{data.wordSentiment.tweets}} Tweets</span>
+        </div>
+        <div class="card-body">
+            <div class="row justify-content-center px-3 py-2">
+                <div class="col-4">
+                    <app-pie-sentiment [label]="'Positive'" [percent]="data.wordSentiment.avgPositiveScore"></app-pie-sentiment>
+                </div>
+                <div class="col-4">
+                    <app-pie-sentiment [label]="'Neutral'" [percent]="data.wordSentiment.avgNeutralScore"></app-pie-sentiment>
+                </div>
+                <div class="col-4">
+                    <app-pie-sentiment [label]="'Negative'" [percent]="data.wordSentiment.avgNegativeScore"></app-pie-sentiment>
+                </div>
+            </div>
+            <div class="row justify-content-center py-2">
+                <div class="col-3">
+                    <div class="h6" style="color:#333; text-align: center;">{{data.wordSentiment.positiveLabel}}</div>
+                    <div style="color: gray;text-align: center;">Positive</div>
+                </div>
+                <div class="col-3">
+                    <div class="h6" style="color:#333;text-align: center;">{{data.wordSentiment.neutralLabel}}</div>
+                    <div  style="color: gray;text-align: center;">Neutral</div>
+                </div>
+                <div class="col-3">
+                    <div class="h6" style="color:#333;text-align: center;">{{data.wordSentiment.mixedLabel}}</div>
+                    <div c style="color: gray;text-align: center;">Mixed</div>
+                </div>
+                <div class="col-3">
+                    <div class="h6" style="color:#333;text-align: center;">{{data.wordSentiment.negativeLabel}}</div>
+                    <div style="color: gray;text-align: center;">Negative</div>
+                </div>
+            </div>
+        </div>
+    </div>

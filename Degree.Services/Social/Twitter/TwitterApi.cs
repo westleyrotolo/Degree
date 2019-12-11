@@ -50,8 +50,8 @@ namespace Degree.Services.Social.Twitter
             Login();
             GetLocation = new GoogleMapsHelper();
             stream = Stream.CreateFilteredStream();
-            stream.AddTrack("terremoto");
-       //     stream.AddLocation(new Tweetinvi.Models.Coordinates(49.246292, -123.116226), new Tweetinvi.Models.Coordinates(-33.865143, 151.209900));
+            stream.AddTrack("trump");
+            //stream.AddLocation(new Tweetinvi.Models.Coordinates(49.246292, -123.116226), new Tweetinvi.Models.Coordinates(-33.865143, 151.209900));
 
             stream.MatchingTweetReceived += (sender, args) =>
             {
@@ -62,22 +62,25 @@ namespace Degree.Services.Social.Twitter
                 if (!string.IsNullOrEmpty(args.Tweet.Place?.Geometry?.Type))
                 {
 
-                }
-                Task.Run(async () =>
+                } 
+               Task.Run(async () =>
                 {
                     var tweetRaw = AdapterTweet(args.Tweet);
                     if (!string.IsNullOrEmpty(tweetRaw?.User?.Location))
                     {
                         var geoUsers = await GetLocation.GeoReverse(tweetRaw.User.Location);
-                        tweetRaw.GeoUsers.AddRange(geoUsers);
+                        if (geoUsers != null)
+
+
+                            tweetRaw.User.GeoUsers.AddRange(geoUsers);
                     }
 
 
-                 //   var tweetsSentiment = await AzureSentiment.AnalyzeTweetSentiment(new List<TweetRaw>() { tweetRaw });
-                //    if (tweetsSentiment != null && tweetsSentiment.Count > 0)
-               //     {
-                //        tweetRaw.TweetSentiment = tweetsSentiment[0];
-                //    }
+                    var tweetsSentiment = await AzureSentiment.AnalyzeTweetSentiment(new List<TweetRaw>() { tweetRaw });
+                    if (tweetsSentiment != null && tweetsSentiment.Count > 0)
+                    {
+                       tweetRaw.TweetSentiment = tweetsSentiment[0];
+                    }
                     var tweet = CreateTweetDto(tweetRaw);
                     Update?.Invoke(tweet);
                 });
@@ -189,12 +192,12 @@ namespace Degree.Services.Social.Twitter
                      ).ToList() : null,
                 Hashtags = (x.TweetsHashtags != null) ?
                      x.TweetsHashtags.Select((h) => h.Hashtags).ToList() : null,
-                GeoCoordinate = (x.GeoUsers != null && x.GeoUsers.Count > 0) ?
+                GeoCoordinate = (x.User.GeoUsers != null && x.User.GeoUsers.Count > 0) ?
                                     new GeoCoordinateDto
                                     {
-                                        Lat = x.GeoUsers[0].Lat,
-                                        Lon = x.GeoUsers[0].Lon,
-                                        GeoName = x.GeoUsers[0].DisplayName
+                                        Lat = x.User.GeoUsers[0].Lat,
+                                        Lon = x.User.GeoUsers[0].Lon,
+                                        GeoName = x.User.GeoUsers[0].DisplayName
                                     } : null
             };
         }

@@ -1,5 +1,5 @@
 <div style="background-color: white;">
-    <div class="px-2 py-2" style="background-color: #ecf0f1;">
+    <div class="px-2 py-2" style="background-color: #ecf0f1; overflow: hidden; ">
         <mat-label>Visualizza</mat-label>
         <mat-select [(value)]="select" name="select" (selectionChange)="orderChanged($event)">
             <mat-option *ngFor="let label of userSelections" Selected [value]="label">

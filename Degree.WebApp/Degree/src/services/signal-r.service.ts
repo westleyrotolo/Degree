@@ -12,7 +12,11 @@ import * as signalR from '@aspnet/signalr';
   constructor() {
     this.message$ = new Subject<Tweet>();
     this.connection = new signalR.HubConnectionBuilder()
-    .withUrl('https://localhost:5001/notify')
+    .withUrl('https://localhost:5001/notify', 
+     {
+      skipNegotiation: true,
+      transport: signalR.HttpTransportType.WebSockets
+      })
     .build();
     this.connect();
   }

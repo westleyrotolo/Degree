@@ -6,6 +6,7 @@ namespace Degree.Models.Dto
 {
     public class WordSentiment
     {
+        public string Word { get; set; }
         public double AvgPositiveScore { get; set; }
         public double AvgNeutralScore { get; set; }
         public double AvgNegativeScore { get; set; }
@@ -14,18 +15,5 @@ namespace Degree.Models.Dto
         public int NegativeLabel { get; set; }
         public int MixedLabel { get; set; }
         public int Tweets { get; set; }
-
-
-        public void AddLabel(string label)
-        {
-            if (label.ToLower() == "positive")
-                PositiveLabel++;
-            if (label.ToLower() == "negative")
-                NegativeLabel++;
-            if (label.ToLower() == "neutral")
-                NeutralLabel++;
-            if (label.ToLower() == "mixed")
-                MixedLabel++;
-        }
     }
 }

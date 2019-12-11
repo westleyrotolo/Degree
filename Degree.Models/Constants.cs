@@ -24,4 +24,5 @@ namespace Degree.Models
             "#AffidoParitario"
         };
     }
+
 }
