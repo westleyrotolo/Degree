@@ -14,4 +14,8 @@ export interface AvgSentiment {
     tweets: number;
     fromDate: Date;
     toDate: Date;
+    cumAvgPositiveScore:number;
+    cumAvgNeutralScore: number;
+    cumAvgNegativeScore: number;
+    cumulativeTweets: number
 } 

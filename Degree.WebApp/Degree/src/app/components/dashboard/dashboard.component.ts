@@ -8,6 +8,7 @@ import { Tweet } from 'src/models/tweet';
 import { ScrollToBottomDirective } from 'src/directives/scroll-to-bottom.directive';
 import { TweetService } from 'src/services/tweet.service';
 import { WordCloud } from 'src/models/wordCloud';
+import { GeoTweets, GroupedGeoTweets } from 'src/models/geoTweets';
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -15,6 +16,22 @@ import { WordCloud } from 'src/models/wordCloud';
 })
 export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
+
+  positiveColor="#00b894";
+  negativeColor="#d63031";
+  mixedColor="#0984e3";
+  neutralColor="#dfe6e9"
+  getColor(sentiment: string): string {
+    if (sentiment.toLowerCase() == "positive") {
+      return this.positiveColor;
+    } else if (sentiment.toLowerCase() == "negative") {
+      return this.negativeColor;
+    } else if (sentiment.toLowerCase() == "mixed") {
+      return this.mixedColor;
+    } else  {
+      return this.neutralColor;
+    }
+  }
 
   displayedColumns = ['item'];
   @ViewChild('map', { static: false })
@@ -28,8 +45,43 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     private http: HttpClient,
     private tweetService: TweetService) {
 
-  }
+  } 
+  geoTweets: GroupedGeoTweets[] ;
+  dates: Date[]
+  updateMap() {
+    this.tweetService.fetchGeoUsers().subscribe((x)=>
+    {
+        this.geoTweets = x;
+        let index = 0;
+       this.dates = this.geoTweets.map(x=>x.fromDate);
+        this.dates = this.dates.filter( (thing, i, arr) => arr.findIndex(t => t === thing) === i);
+        this.dates = this.dates.sort((one, two) => (one > two ? -1 : 1));
+        this.updateDate();
+     
 
+    });
+  }
+  updateDate( index = 0) {
+    setTimeout(() => {
+      this.startAnimation(this.dates[index]);
+      index++
+      this.updateDate(index);
+    }, 1000);
+
+  }
+  startAnimation(fromDate: Date) {
+    let index = 0;
+
+    console.log(fromDate);
+    let fDate = new Date(fromDate)
+    let tweetsgeo = this.geoTweets.filter(x=> x.fromDate == fromDate).slice(0,30);
+    console.log('tweetsgeo', tweetsgeo)
+    tweetsgeo[0].tweets.forEach((element)=> {
+    var coord: [{ lat: number, lon: number }  ] = [{ lat: element.latitude, lon: element.longitude }];
+    this.addPin(coord, this.getColor(element.sentiment));
+
+    })
+  }
   @HostListener('window:resize', ['$event'])
   onResize(event) {
     this.innerWidth = window.innerWidth;
@@ -51,6 +103,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         _this.maxCount = _this.wordData [0].count;
          console.log('data',_this.wordData)
       })
+      this.italyMap()
   }
   
   public innerWidth: any;
@@ -88,7 +141,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
           .attr("class", "countries-borders");
 
 
-      }).then(() => this.addPin(this.coord));
+      }).then(() => this.addPin(this.coord,this.getColor('Positive')));
+
   }
   italyMap() {
     var width = 500, height = 500;
@@ -118,6 +172,9 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         .datum(subunits)
         .attr("class", "map")
         .attr("d", path);
+
+
+
       // draw and style any feature at time
       /*svg.selectAll("path")
       .data(topojson.feature(it, it.objects.sub).features)
@@ -125,26 +182,27 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       .attr("class",function(d) { return d.id; })
       .attr("d",path);*/
 
-    });
-  }
-  addPin(coord: [{ lat: number, lon: number }]) {
+    }).then((x)=>this.updateMap());
+  } 
+  
+  addPin(coord: [{ lat: number, lon: number }], color:string) {
     var projection = d3.geoMercator()
     this.svg = d3.select("svg")
     this.svg.append("circle")
       .data(coord)
       .attr("cx", function (d) { return projection([d.lon, d.lat])[0] })
       .attr("cy", function (d) { return projection([d.lon, d.lat])[1] })
-      .attr("r", 1)
-      .attr("fill", "#ff0000")
-      .style("stroke", "#ff0000")
+      .attr("r", 2)
+      .attr("fill", color)
+      .style("stroke", color)
       .style("stroke-opacity", 1)
       .style("fill-opacity", 1)
       .transition()
-      .duration(1000)
+      .duration(1500)
       .ease(Math.sqrt)
       .style("stroke-opacity", 0)
       .style("fill-opacity", 0)
-      .attr("r", 2)
+      .attr("r", 4)
       .remove();
   }
   ngOnDestroy(): void {

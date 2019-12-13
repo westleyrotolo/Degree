@@ -1,5 +1,19 @@
-<h3 style="text-align:center;" (click)="updateData()">Radar Chart</h3>
-<div style="display: block;">
-  <canvas #chart baseChart [datasets]="radarChartData" [options]="radarChartOptions" [labels]="radarChartLabels"
-  [chartType]="radarChartType"></canvas>
+<div class="background-white card">
+  <div class="row px-2 header" style="margin: 0px;">
+    <span class="col-8 title" (click)="updateData()">Tweets</span>
+    <span class="col-4 time" (click)="updateData()">{{currentDate | date:'HH:mm,  dd MMMM'}}</span>
+
+  </div>
+  <div class="card-body">
+    <div class=" my-1" style="display: block;">
+      <div id="textTweetsCum"></div>
+      <canvas #chart baseChart style="width: 500px; height:500px;" [datasets]="radarChartData"
+        [options]="radarChartOptions" [labels]="radarChartLabels" [chartType]="radarChartType"></canvas>
+    </div>
+    <div class="my-1" style="display: block;">
+      <div id="textTweets"></div>
+      <canvas #chart baseChart style="width: 500px; height:500px;" [datasets]="radarChartData2"
+        [options]="radarChartOptions" [labels]="radarChartLabels" [chartType]="radarChartType"></canvas>
+    </div>
+  </div>
 </div>

@@ -12,40 +12,50 @@ import { AvgHashtagSentiment } from 'src/models/avgHashtagSentiment';
   providedIn: 'root'
 })
 export class TweetService {
- // readonly BASE_URL = 'https://degree-webapi.azurewebsites.net/TweetApi';
-  readonly BASE_URL = 'https://localhost:5001/TweetApi';
+  // readonly BASE_URL = 'https://degree-webapi.azurewebsites.net/TweetApi';
+  readonly BASE_URL = 'https://localhost:44302/TweetApi';
   constructor(private apiClient: BaseHttpService) { }
 
-  fetchTweets(apiRequest: ApiRequest):Observable<Tweet[]>{
-      const url = '/Search';
-      return this.apiClient.post(apiRequest, this.BASE_URL + url);
+  fetchTweets(apiRequest: ApiRequest): Observable<Tweet[]> {
+    const url = '/Search';
+    return this.apiClient.post(apiRequest, this.BASE_URL + url);
   }
-  fetchHashtags():Observable<HashtagsCount[]>{
+  fetchHashtags(): Observable<HashtagsCount[]> {
     const url = '/GetHashtags';
     return this.apiClient.getData(this.BASE_URL + url);
   }
-  fetchUserMoreActives(take:number = 10, skip:number=0): Observable<User[]> {
-    const url =`/MoreActives?take=${take}&skip=${skip}`;
+  fetchUserMoreActives(take: number = 10, skip: number = 0): Observable<User[]> {
+    const url = `/MoreActives?take=${take}&skip=${skip}`;
     return this.apiClient.getData(this.BASE_URL + url);
-  } 
-  fetchUserMoreRetweets(take:number = 10, skip:number=0): Observable<User[]> {
-    const url = `/MoreRetweets?take=${take}&skip=${skip}`;
-    return this.apiClient.getData(this.BASE_URL+url);
   }
-  fetchUserMoreFavorites(take:number =10, skip:number=0): Observable<User[]> {
+  fetchUserMoreRetweets(take: number = 10, skip: number = 0): Observable<User[]> {
+    const url = `/MoreRetweets?take=${take}&skip=${skip}`;
+    return this.apiClient.getData(this.BASE_URL + url);
+  }
+  fetchUserMoreFavorites(take: number = 10, skip: number = 0): Observable<User[]> {
     const url = `/MoreFavorites?take=${take}&skip=${skip}`;
-    return this.apiClient.getData(this.BASE_URL+url);
+    return this.apiClient.getData(this.BASE_URL + url);
   }
   fetchTagCloud(): Observable<WordCloud[]> {
-    const url ='/TagCloud';
-    return this.apiClient.getData(this.BASE_URL+url);
+    const url = '/TagCloud';
+    return this.apiClient.getData(this.BASE_URL + url);
   }
-  fetchWordSentiment(word:string): Observable<WordSentiment> {
-    const url=`/AvgWord?word=${word}`;
-    return this.apiClient.getData(this.BASE_URL+url);
+  fetchWordSentiment(word: string): Observable<WordSentiment> {
+    const url = `/AvgWord?word=${word}`;
+    return this.apiClient.getData(this.BASE_URL + url);
+  }
+  fetchGeoUsers() : Observable<[]> {
+    const url = 'assets/geotweets.json';
+    return this.apiClient.getData(url);
   }
   fetchAvgSentiments(): Observable<AvgHashtagSentiment[]> {
-    const url = '/AvgSentiments';
-    return this.apiClient.getData(this.BASE_URL+url);
+    if (false) {
+      const url = '/AvgSentiments';
+      return this.apiClient.getData(this.BASE_URL + url);
+    } else {
+
+      const url = 'assets/avghashtags.json';
+      return this.apiClient.getData(url);
+    }
   }
 }

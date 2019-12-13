@@ -10,6 +10,9 @@ using Degree.Models.Dto;
 using Degree.Models.WebApi;
 using Degree.Models.Twitter;
 using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
+using System.Text;
+using Newtonsoft.Json.Serialization;
 
 namespace Degree.WebApi.Controllers
 {
@@ -101,14 +104,34 @@ namespace Degree.WebApi.Controllers
             {
                 return null;
             }
+
         }
+        [HttpGet("GeoTweets")]
+        public List<GroupedTweetsGeo> GeoTweets()
+        {
+            try
+            {
+                var geoTweets = AppDbHelper<TweetRaw>.TweetsGeoCode();
+                return geoTweets;
+            
+            }
+            catch(Exception ex)
+            {
+                return null;
+            }
+        }
+
         [HttpGet("AvgSentiments")]
-        public IEnumerable<AvgHashtagSentiment> AvgSentiments()
+        public string AvgSentiments()
         {
             try
             {
                 var avgs = AppDbHelper<TweetRaw>.AvgHashtags();
-                return avgs;
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(avgs, new JsonSerializerSettings
+                {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver()
+                });
+                return json;
             }
             catch (Exception ex)
             {

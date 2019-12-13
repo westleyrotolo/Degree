@@ -9,6 +9,8 @@ using Degree.Models.Dto;
 using Degree.Models.WebApi;
 using Degree.Models.Twitter;
 using System.Text.Json.Serialization;
+using Wibci.CountryReverseGeocode;
+using Wibci.CountryReverseGeocode.Models;
 
 namespace Degree.AppDbContext
 {
@@ -293,6 +295,65 @@ namespace Degree.AppDbContext
                 return items;
             }
         }
+        public static List<GroupedTweetsGeo> TweetsGeoCode()
+        {
+            CountryReverseGeocodeService _service = new CountryReverseGeocodeService() ;
+        List<GroupedTweetsGeo> groupedTweets = new List<GroupedTweetsGeo>();
+            using (var context = new AppDbContext())
+            {
+                var tweets = context.TweetsRaw
+                    .Include(x => x.TweetSentiment)
+                    .Include(x => x.User)
+                    .ThenInclude(x => x.GeoUsers).ToList();
+
+                foreach (var t in tweets.Where(x => x.User.GeoUsers != null && x.User.GeoUsers.Count > 0))
+                {
+                    GeoLocation location = new GeoLocation()    ;
+                    try
+                    {
+  location = new GeoLocation { Longitude = t.User.GeoUsers[0].Lon, Latitude = t.User.GeoUsers[0].Lat };
+                   
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+                    var info = _service.FindCountry(location);
+                    if (info != null && !string.IsNullOrEmpty(info.Name) && info.Name == "Italy")
+                    {
+                        try
+                        {
+                            var fromDate = new DateTime(t.CreatedAt.Year, t.CreatedAt.Month, t.CreatedAt.Day, t.CreatedAt.Hour, 0, 0);
+                        if (groupedTweets.Count(x=>x.FromDate == fromDate) == 0)
+                            {
+                                groupedTweets.Add(new GroupedTweetsGeo() { FromDate = fromDate });
+                            }
+                        var geoTweet = new TweetsGeoCode()
+                        {
+                            CreatedAt = t.CreatedAt,
+                            Text = t.Text,
+                            Sentiment = t.TweetSentiment == null ? tweets.First(x => x.Id == t.RetweetedStatusId).TweetSentiment.Sentiment.GetDescription() : t.TweetSentiment.Sentiment.GetDescription(),
+                            UserProfileName = t.User.Name,
+                            UserScreenName = t.User.ScreenName,
+                            Latitude = location.Latitude,
+                            Longitude = location.Longitude,
+                            PositiveScore = t.TweetSentiment == null ? tweets.First(x=>x.Id == t.RetweetedStatusId).TweetSentiment.PositiveScore : t.TweetSentiment.PositiveScore,
+                            NegativeScore = t.TweetSentiment == null ? tweets.First(x => x.Id == t.RetweetedStatusId).TweetSentiment.NegativeScore : t.TweetSentiment.NegativeScore,
+                            NeutralScore = t.TweetSentiment == null ? tweets.First(x => x.Id == t.RetweetedStatusId).TweetSentiment.NeutralScore : t.TweetSentiment.NeutralScore,
+                        };
+                            groupedTweets.Where(x => x.FromDate == fromDate).FirstOrDefault().Tweets.Add(geoTweet);
+
+                        }
+                        catch (Exception ex)
+                        {
+                        }
+
+                    }
+
+                }
+            }
+                return groupedTweets;
+        }
         public static List<AvgHashtagSentiment> AvgHashtags()
         {
             using (var context = new AppDbContext())
@@ -301,9 +362,10 @@ namespace Degree.AppDbContext
                 var items = context.TweetsRaw
                 .Include(x => x.TweetSentiment)
                 .ThenInclude(x => x.Sentences)
+                .Include(x=>x.TweetsHashtags)
                 .ToList();
-                var hashtags = new List<string>() { "ALL" };
-                hashtags.AddRange(Models.Constants.Hashtags);
+                var hashtags = new List<string>();
+                hashtags.AddRange(Models.Constants.AvgHashtags);
                 foreach (var h in hashtags)
                 {
                     var avg = GroupedHashtagSentiment(ref items, h);
@@ -331,10 +393,11 @@ namespace Degree.AppDbContext
             }
             foreach (var tweet in tweets)
             {
-                if (tweet.TweetsHashtags.Count(x => x.Hashtags == hashtags) > 0 || hashtags == "ALL")
+                if (tweet.Text.Contains(hashtags, StringComparison.OrdinalIgnoreCase))
                 {
+                    
                     var avgSentiment = avg.AvgSentiments
-                        .FirstOrDefault(x => x.FromDate >= tweet.CreatedAt && x.ToDate <= tweet.CreatedAt);
+                        .FirstOrDefault(x => x.FromDate <= tweet.CreatedAt && x.ToDate >= tweet.CreatedAt);
                     if (avgSentiment != null)
                     {
                         var tweetSentiment = tweet.TweetSentiment != null ? tweet.TweetSentiment : tweets.FirstOrDefault(x => x.Id == tweet.RetweetedStatusId)?.TweetSentiment;
@@ -349,6 +412,14 @@ namespace Degree.AppDbContext
                     }
                 }
             }
+            avg.AvgSentiments.ForEach(x =>
+            {
+                x.CumulativeTweets = avg.AvgSentiments.Where(t => t.FromDate <= x.FromDate).Sum(t => t.Tweets);
+                x.CumulativePositivesScore.AddRange(avg.AvgSentiments.Where(t => t.FromDate <= x.FromDate).SelectMany(x => x.PositivesScore));
+                x.CumulativeNeutralsScore.AddRange(avg.AvgSentiments.Where(t => t.FromDate <= x.FromDate).SelectMany(x => x.NeutralsScore));
+                x.CumulativeNegativesScore.AddRange(avg.AvgSentiments.Where(t => t.FromDate <= x.FromDate).SelectMany(x => x.NegativesScore));
+            });
+
             return avg;
         }
         public static List<TweetDto> FetchContains(string[] Hashtags, int page = 0, int itemPerPage = 0, bool skipRetweet = false, OrderSentiment orderSentiment = OrderSentiment.NoOrder)

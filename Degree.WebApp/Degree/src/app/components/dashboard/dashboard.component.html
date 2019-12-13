@@ -1,14 +1,15 @@
 <div class="main">
     <div class="row " style="margin: auto;">
-        <app-radial-sentiment></app-radial-sentiment>
-       <!-- <div #map id="map" class="card-margin map-tweet mat-elevation-z8"></div> -->
-     <!--   <app-tweet-list [style.height.px]="height" class="mat-elevation-z8 tweet-list card-margin"></app-tweet-list>
+     <app-tweet-list [style.height.px]="height" class="mat-elevation-z8 tweet-list card-margin"></app-tweet-list>
         <app-user-list  style="background-color: white;" [style.height.px]="height" class="mat-elevation-z8 user-list card-margin"></app-user-list>
-     -->
+               <app-word-cloud style="background-color: white!important;" [wordData]="wordData" [maxCount]="maxCount" class="mat-elevation-z8 card-margin"></app-word-cloud>
+  
     </div>
-    <div class="row">
-            <app-word-cloud style="background-color: white!important;" [wordData]="wordData" [maxCount]="maxCount" class="mat-elevation-z8 card-margin"></app-word-cloud>
-   
+    <div class="row" style="margin: auto;">    
+    <app-radial-sentiment class="mat-elevation-z8 card-margin"></app-radial-sentiment>
+     
+     <div #map id="map" class="card-margin map-tweet mat-elevation-z8"></div> 
+    
     </div>
 </div>
 
