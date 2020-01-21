@@ -48,6 +48,9 @@
           </div>
         </div>
       </div>
+      <div class="pb-1 pt-1">
+        <span *ngFor="let e of tweet.entityRecognizeds" class="badge badge-entities mr-2 mb-2 py-2 px-2 hashtag-badge">{{e.entityName}} ({{e.entityType}})</span>
+      </div>
     </mat-card-content>
   
     <mat-card-footer>

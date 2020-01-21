@@ -63,7 +63,7 @@ namespace Degree.WebApi
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHub<NotifyHub>("/notify");
+                endpoints.MapHub<StreamTwitterHostedService>("/notify");
             });
         }
     }

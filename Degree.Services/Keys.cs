@@ -19,7 +19,9 @@ namespace Degree.Services
             Twitter.ACCESS_TOKEN = properties[nameof(Twitter.ACCESS_TOKEN)];
             Twitter.ACCESS_TOKEN_SECRET = properties[nameof(Twitter.ACCESS_TOKEN_SECRET)];
             Azure.TEXT_ANALYSIS_KEY = properties[nameof(Azure.TEXT_ANALYSIS_KEY)];
-            Azure.TEXT_ANALYSIS_URL = properties[nameof(Azure.TEXT_ANALYSIS_URL)];
+            Azure.TEXT_ANALYSIS_SENTIMENT_URL = properties[nameof(Azure.TEXT_ANALYSIS_SENTIMENT_URL)];
+            Azure.TEXT_ANALYSIS_ENTITY_URL = properties[nameof(Azure.TEXT_ANALYSIS_ENTITY_URL)];
+            Azure.TEXT_ANALYSIS_ENTITY_PII_URL = properties[nameof(Azure.TEXT_ANALYSIS_ENTITY_PII_URL)];
         }
         public static class Twitter
         {
@@ -31,8 +33,9 @@ namespace Degree.Services
         }
         public static class Azure
         {
-            public static string TEXT_ANALYSIS_URL;
-
+            public static string TEXT_ANALYSIS_SENTIMENT_URL;
+            public static string TEXT_ANALYSIS_ENTITY_URL;
+            public static string TEXT_ANALYSIS_ENTITY_PII_URL;
             public static string TEXT_ANALYSIS_KEY;
         }
     }

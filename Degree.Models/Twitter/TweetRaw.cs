@@ -139,7 +139,10 @@ namespace Degree.Models
         public TweetSentiment TweetSentiment { get; set; }
 
         [JsonIgnore]
-        public List<TweetHashtags> TweetsHashtags { get; set; } = new List<TweetHashtags>();    
+        public List<TweetHashtags> TweetsHashtags { get; set; } = new List<TweetHashtags>();
+
+        [JsonIgnore]
+        public List<TweetEntityRecognized> TweetEntities { get; set; } = new List<TweetEntityRecognized>(); 
 
     }
     public class ExtendedTweet

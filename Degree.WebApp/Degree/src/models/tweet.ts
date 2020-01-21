@@ -26,6 +26,7 @@ export interface Tweet {
     negativeScore:number
     sentimentSentences?: SentimentSentence[]
     hashtags?: string[]
+    EntityRecognizeds?: EntityRecognized[]
     geoCoordinate?: GeoCoordinate
 }
 export interface GeoCoordinate {
@@ -51,4 +52,10 @@ export interface HashtagsCount {
     hashtags: string;
     count: number;
     isActive: boolean;    
+}
+export interface EntityRecognized {
+    entityName: string;
+    entityType: string;
+    offset: number;
+    length: number;
 }

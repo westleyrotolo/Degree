@@ -34,6 +34,7 @@ namespace Degree.Models.Dto
         public GeoCoordinateDto GeoCoordinate { get; set; }
 
         public List<SentimentSentenceDto> SentimentSentence { get; set; }
+        public List<EntityRecognizedDto> EntityRecognizeds { get; set; }
         public List<string> Hashtags { get; set; }
     }
     public class GeoCoordinateDto
@@ -41,6 +42,14 @@ namespace Degree.Models.Dto
         public double Lat { get; set; }
         public double Lon { get; set; }
         public string GeoName { get; set; }
+    }
+    public class EntityRecognizedDto
+    {
+
+        public string EntityName { get; set; }
+        public string EntityType { get; set; }
+        public int Offset { get; set; }
+        public int Length { get; set; }
     }
     public class SentimentSentenceDto
     {

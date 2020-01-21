@@ -1,10 +1,74 @@
-<div class="main">
-    <div class="row " style="margin: auto;">
+<div class="main container-fluid">
+    <div class="row">
+        <div class="row col-12 py-3 px-3 center bgwhite mat-elevation-z8">
+            <div class="col-12 input-group mb-3  center">
+            <div class="input-group-prepend mb-3">
+                <button class="btn btn-primary px-3" (click)="updateTrack()" type="button"
+                id="button-addon2">Add</button>
+            </div>
+                <input (keyup.enter)="updateTrack()" type="text" class="form-control" placeholder="Query"
+                    aria-label="Query" aria-describedby="button-addon2" [(ngModel)]="q"
+                    [ngModelOptions]="{standalone: true}">
+
+                <div class="input-group-append mb-3">
+                    <button [disabled]="queryStream.tracks.length == 0" class="btn btn-primary px-3 "
+                        (click)="trackStream()" type="button">Start Track</button>
+                </div>
+
+            </div>
+
+            <div class="col-12 ">
+                <div *ngIf="queryStream.tracks" style="min-height: 2.5rem;">
+                    <div *ngFor="let q of queryStream.tracks" class="chip input-group-text">
+                        {{q}}
+                        <span class="closebtn" (click)="removeTag(q)">&times;</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
         <div #map id="map" class="card-margin map-tweet mat-elevation-z8"></div>
-        <div [style.height.px]="height" style="float: right; width: 330px;" class=" mat-elevation-z8 tweet-list card-margin">
+        <div [style.height.px]="height" style="float: right; width: 350px;"
+            class=" mat-elevation-z8 tweet-list card-margin">
             <div *ngFor="let tweet of tweets">
                 <app-tweet-card [tweet]="tweet" style="margin: auto auto;"></app-tweet-card>
             </div>
         </div>
+        <div style="width: 100%;" class="row card-margin py-3 px-3 center bgwhite mat-elevation-z8">
+            <span class="h3 number col-12"><span id="tweetnumber">{{tweets.length}}</span> Tweet</span>
+
+        <div class="center justify-content-center col-6">
+            <div class="row justify-content-center px-3 py-2">
+                <div class="col-3">
+                    <app-pie-sentiment [label]="'Positive'" [(percent)]="tweetSentiment.avgPositiveScore"></app-pie-sentiment>
+                </div>
+                <div class="col-3">
+                    <app-pie-sentiment [label]="'Neutral'" [(percent)]="tweetSentiment.avgNeutralScore"></app-pie-sentiment>
+                </div>
+                <div class="col-3">
+                    <app-pie-sentiment [label]="'Negative'" [(percent)]="tweetSentiment.avgNegativeScore"></app-pie-sentiment>
+                </div>
+            </div>
+            <div class="row justify-content-center py-2">
+                <div class="col-3">
+                    <div class="h6" style="color:#333; text-align: center;">{{tweetSentiment.positiveLabel}}</div>
+                    <div style="color: gray;text-align: center;">Positive</div>
+                </div>
+                <div class="col-3">
+                    <div class="h6" style="color:#333;text-align: center;">{{tweetSentiment.neutralLabel}}</div>
+                    <div  style="color: gray;text-align: center;">Neutral</div>
+                </div>
+                <div class="col-3">
+                    <div class="h6" style="color:#333;text-align: center;">{{tweetSentiment.mixedLabel}}</div>
+                    <div c style="color: gray;text-align: center;">Mixed</div>
+                </div>
+                <div class="col-3">
+                    <div class="h6" style="color:#333;text-align: center;">{{tweetSentiment.negativeLabel}}</div>
+                    <div style="color: gray;text-align: center;">Negative</div>
+                </div>
+            </div>
+        </div>
+        </div>  
+
     </div>
 </div>

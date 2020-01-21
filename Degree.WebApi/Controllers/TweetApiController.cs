@@ -65,6 +65,21 @@ namespace Degree.WebApi.Controllers
                 return null;
             }
         }
+
+        [HttpGet("GetTweetByTime")]
+        public IEnumerable<TweetDto> GetTweetsByTime()
+        {
+            try
+            {
+                var tweets = AppDbHelper<TweetRaw>.FetchTweetInTime(new DateTime(2019, 3, 29, 0, 0, 0), new DateTime(2019, 3, 31, 23, 59, 59), true);
+                return tweets;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
         [HttpGet("MoreActives")]
         public IEnumerable<UserDto> MoreActives(int skip, int take)
         {
@@ -169,10 +184,6 @@ namespace Degree.WebApi.Controllers
     }
     public class NotifyHub : Hub
     {
-        public async Task Send(TweetRaw tweetRaw)
-        {
-            
-            await Clients.All.SendAsync("broadcastMessage", tweetRaw);
-        }
+        
     }
 }

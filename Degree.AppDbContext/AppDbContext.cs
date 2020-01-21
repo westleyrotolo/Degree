@@ -26,6 +26,7 @@ namespace Degree.AppDbContext
 
             modelBuilder.Entity<TweetRaw>().HasKey(x => x.Id);
             modelBuilder.Entity<TweetSentiment>().HasKey(x => x.TweetRawId);
+            modelBuilder.Entity<TweetEntityRecognized>().HasKey(x => x.Id);
             modelBuilder.Entity<GeoUser>().HasKey(x => new { x.Id, x.UserId });
             modelBuilder.Entity<UserDto>().HasNoKey();
 
@@ -39,6 +40,12 @@ namespace Degree.AppDbContext
             .HasOne(e => e.TweetSentiment)
             .WithOne(e => e.TweetRaw)
             .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<TweetRaw>()
+            .HasMany(e => e.TweetEntities)
+            .WithOne(e => e.TweetRaw)
+            .OnDelete(DeleteBehavior.Cascade);
+
 
 
             modelBuilder.Entity<TweetRaw>()
@@ -73,7 +80,7 @@ namespace Degree.AppDbContext
             .WithOne(x => x.TweetsSentiment)
             .HasForeignKey(x => x.TweetSentimentId)
             .OnDelete(DeleteBehavior.Cascade);
-
+            
             modelBuilder.Entity<BoundingBox>()
             .Property(e => e.Coordinates)
             .HasConversion(
@@ -135,7 +142,7 @@ namespace Degree.AppDbContext
         public DbSet<TweetSentenceSentiment> SentenceSentiments { get; set; }
         public DbSet<TweetHashtags> TweetsHashtags { get; set; }
         public DbSet<GeoUser> GeoUsers { get; set; }
-
+        public DbSet<TweetEntityRecognized> TweetEntityRecognizeds { get; set; }
         public DbSet<UserDto> UserDto { get; set; }
 
     }

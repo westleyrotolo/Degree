@@ -1,11 +1,16 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnChanges } from '@angular/core';
 
 @Component({
   selector: 'app-pie-sentiment',
   templateUrl: './pie-sentiment.component.html',
   styleUrls: ['./pie-sentiment.component.scss']
 })
-export class PieSentimentComponent implements OnInit {
+export class PieSentimentComponent implements OnInit, OnChanges {
+  ngOnChanges(changes: import("@angular/core").SimpleChanges): void {
+    console.log('onchange', changes);
+    console.log('percent',this.percent);
+    this.normalizedPercent = +(this.percent * 100).toFixed();
+  }
 
   constructor() { }
   @Input()
@@ -13,6 +18,7 @@ export class PieSentimentComponent implements OnInit {
   
   @Input()
   percent: number;
+
   normalizedPercent: number;
 
   SUBTITLECOLOR: string = '#A9A9A9';

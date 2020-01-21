@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
 import { Tweet } from 'src/models/tweet';
 import * as signalR from '@aspnet/signalr';
+import { QueryStream } from 'src/models/queryStream';
 @Injectable({
   providedIn: 'root'
  })
@@ -12,7 +13,7 @@ import * as signalR from '@aspnet/signalr';
   constructor() {
     this.message$ = new Subject<Tweet>();
     this.connection = new signalR.HubConnectionBuilder()
-    .withUrl('https://localhost:44302/notify', 
+    .withUrl('https://localhost:5001/notify', 
      {
       skipNegotiation: true,
       transport: signalR.HttpTransportType.WebSockets
@@ -25,6 +26,9 @@ import * as signalR from '@aspnet/signalr';
     this.connection.on('broadcastMessage', (message) => {
       this.message$.next(message);
     });
+  }
+  public sendMessage(query: QueryStream) : any {
+    this.connection.invoke("query",query);
   }
   public getMessage(): Observable<Tweet> {
     return this.message$.asObservable();

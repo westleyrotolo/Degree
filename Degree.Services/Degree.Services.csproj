@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="TweetinviAPI" Version="4.0.3" />
+    <PackageReference Include="Nominatim.API" Version="1.5.2" />
   </ItemGroup>
 
   <ItemGroup>

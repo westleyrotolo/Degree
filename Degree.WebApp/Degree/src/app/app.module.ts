@@ -29,6 +29,7 @@ import { WordSentimentComponent } from './components/word-sentiment/word-sentime
 import { ExperimentalComponent } from './components/experimental/experimental.component';
 import { RadialSentimentComponent } from './components/radial-sentiment/radial-sentiment.component';
 import { ChartsModule } from 'ng2-charts';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -56,6 +57,7 @@ import { ChartsModule } from 'ng2-charts';
     RouterModule.forRoot(AppRoutes),
     BrowserModule,
     ChartsModule,
+    FormsModule,
     BrowserAnimationsModule,
     HttpClientModule,
     MatCardModule,

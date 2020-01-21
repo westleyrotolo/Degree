@@ -213,6 +213,87 @@ namespace Degree.AppDbContext
             }
         }
 
+        public static List<TweetDto> FetchTweetInTime(DateTime start, DateTime end, bool retweeted)
+        {
+            using (var context = new AppDbContext())
+            {
+                var items = context.TweetsRaw.Where(t => (t.IsRetweetStatus == false || t.IsRetweetStatus == retweeted))
+                .Include(x => x.User)
+                .ThenInclude(x => x.GeoUsers)
+                .Include(x => x.TweetSentiment)
+                .ThenInclude(x => x.Sentences)
+                .Where(x => x.CreatedAt > start && x.CreatedAt < end)
+                .OrderByDescending(x=>x.FavoriteCount)
+                .ThenByDescending(x=>x.RetweetCount)
+                .ThenByDescending(x=>x.ReplyCount)
+                .ThenByDescending(x=>x.QuoteCount)
+                .ToList();
+                var dtos = items
+               .Where(x=>x.User.GeoUsers.Count>0)
+               .Select((x) =>
+               new TweetDto
+               {
+                   Id = x.Id,
+                   CreatedAt = x.CreatedAt,
+                   Text = x.Text,
+                   InReplyToStatusId = x.InReplyToStatusId,
+                   InReplyToScreenName = x.InReplyToScreenName,
+                   UserDefaultProfile = x.User.DefaultProfile,
+                   UserDefaultProfileImage = x.User.DefaultProfileImage,
+                   FavoriteCount = x.FavoriteCount,
+                   UserFollowers = x.User.Followers,
+                   UserFollowing = x.User.Following,
+                   IsQuoteStatus = x.IsQuoteStatus,
+                   IsRetweetStatus = x.IsRetweetStatus,
+                   UserName = x.User.Name,
+                   UserScreenName = x.User.ScreenName,
+                   NegativeScore = x.TweetSentiment != null ? x.TweetSentiment.NegativeScore : -1,
+                   PositiveScore = x.TweetSentiment != null ? x.TweetSentiment.PositiveScore : -1,
+                   NeutralScore = x.TweetSentiment != null ? x.TweetSentiment.NeutralScore : -1,
+                   QuoteCount = x.QuoteCount,
+                   ReplyCount = x.ReplyCount,
+                   RetweetCount = x.RetweetCount,
+                   Sentiment = x.TweetSentiment != null ? x.TweetSentiment.Sentiment.ToString() : "",
+                   UserId = x.User.Id,
+                   UserProfileBanner = x.User.ProfileBanner,
+                   UserProfileImage = x.User.ProfileImage,
+                   UserVerified = x.User.Verified,
+                   SentimentSentence = (x.TweetSentiment != null && x.TweetSentiment.Sentences != null) ?
+                   x.TweetSentiment.Sentences.Select((s) =>
+                   new SentimentSentenceDto
+                   {
+                       Sentiment = s.Sentiment.ToString(),
+                       Length = s.Length,
+                       NegativeScore = s.NegativeScore,
+                       NeutralScore = s.NeutralScore,
+                       PositiveScore = s.PositiveScore
+                   }
+                   ).ToList() : null,
+                   Hashtags = (x.TweetsHashtags != null) ?
+                       x.TweetsHashtags.Select((h) => h.Hashtags).ToList() : null,
+                   GeoCoordinate = (x.User.GeoUsers != null && x.User.GeoUsers.Count > 0) ?
+                                   new GeoCoordinateDto
+                                   {
+                                       Lat = x.User.GeoUsers[0].Lat,
+                                       Lon = x.User.GeoUsers[0].Lon,
+                                       GeoName = x.User.GeoUsers[0].DisplayName
+                                   } : null,
+                   EntityRecognizeds = (x.TweetEntities != null && x.TweetEntities.Count > 0) ?
+                                   x.TweetEntities.Select((e) =>
+
+                                       new EntityRecognizedDto
+                                       {
+                                           EntityName = e.EntityName,
+                                           EntityType = e.EntityType,
+                                           Length = e.Length,
+                                           Offset = e.Offset
+                                       }
+                                   ).ToList() : null
+               }).ToList();
+                return dtos;
+            }
+        }
+
         public static List<UserDto> MoreActives(int skip=0, int take=0)
         {
             var query = "SELECT u.ScreenName, u.Name, u.ProfileImage, count(*) as Statuses, 0 as Favorites, 0 as Retweets from users as u inner join tweetsraw t on t.UserId = u.Id  where t.Lang = \"it\" group by u.Id order by Statuses desc;";
@@ -493,7 +574,18 @@ namespace Degree.AppDbContext
                                         Lat = x.User.GeoUsers[0].Lat,
                                         Lon = x.User.GeoUsers[0].Lon,
                                         GeoName = x.User.GeoUsers[0].DisplayName
-                                    } : null
+                                    } : null,
+                    EntityRecognizeds = (x.TweetEntities != null && x.TweetEntities.Count > 0) ?
+                                    x.TweetEntities.Select((e) =>
+
+                                        new EntityRecognizedDto
+                                        {
+                                            EntityName = e.EntityName,
+                                            EntityType = e.EntityType,
+                                            Length = e.Length,
+                                            Offset = e.Offset
+                                        }
+                                    ).ToList() : null
                 }).ToList();
                 return dtos;
 

@@ -13,7 +13,7 @@ import { AvgHashtagSentiment } from 'src/models/avgHashtagSentiment';
 })
 export class TweetService {
   // readonly BASE_URL = 'https://degree-webapi.azurewebsites.net/TweetApi';
-  readonly BASE_URL = 'https://localhost:44302/TweetApi';
+  readonly BASE_URL = 'https://localhost:5001/TweetApi';
   constructor(private apiClient: BaseHttpService) { }
 
   fetchTweets(apiRequest: ApiRequest): Observable<Tweet[]> {
@@ -46,6 +46,10 @@ export class TweetService {
   }
   fetchGeoUsers() : Observable<[]> {
     const url = 'assets/geotweets.json';
+    return this.apiClient.getData(url);
+  }
+  fetchGeoWCF(): Observable<Tweet[]> {
+    const url = 'assets/wcfpos.json';
     return this.apiClient.getData(url);
   }
   fetchAvgSentiments(): Observable<AvgHashtagSentiment[]> {

@@ -4,6 +4,8 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Degree.Models.Twitter;
 using Newtonsoft.Json;
+using Nominatim.API.Geocoders;
+
 namespace Degree.Services.Location.OpenStreetMap
 {
     public class OpenStreetMapHelper : ILocation
@@ -14,14 +16,29 @@ namespace Degree.Services.Location.OpenStreetMap
             try
             {
 
-                var url = $"https://nominatim.openstreetmap.org/search?q={place}&format=json";
-                using (var client = new HttpClient())
+
+                var geoReverse = new ForwardGeocoder();
+                var result = await geoReverse.Geocode(new Nominatim.API.Models.ForwardGeocodeRequest
                 {
-                    var result = await client.GetAsync(url);
-                    var content = await result.Content.ReadAsStringAsync();
-                    var geoUsers = JsonConvert.DeserializeObject<List<GeoUser>>(content);
-                    return geoUsers;
+                    queryString = place
+                });
+                if (result.Length > 0)
+                {
+                    var geoCode = result[0];
+                    return new List<GeoUser>() {
+                        new GeoUser()
+                        {
+                            DisplayName = geoCode.DisplayName,
+                            Id = geoCode.PlaceID.ToString(),
+                            Importance = geoCode.Importance,
+                            Lat = geoCode.Latitude,
+                            Lon = geoCode.Longitude,
+                            Type = geoCode.ClassType
+                        }
+                    };
                 }
+                return null; ;
+
             }
             catch (Exception ex)
             {
