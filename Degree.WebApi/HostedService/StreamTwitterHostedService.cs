@@ -55,13 +55,13 @@ namespace Degree.WebApi.HostedService
             if (!Connections.ContainsKey(connection))
             {
                 var twitterApi = new TwitterApi();
-                twitterApi.StreamTwitter(Update, connection, query.Tracks, false);
+                twitterApi.Search(Update, connection, query.Tracks, false);
                 Connections.Add(connection, twitterApi);
             }
             else
             {
                 Connections[connection].StopStream();
-                Connections[connection].StreamTwitter(Update, connection, query.Tracks, false);
+                Connections[connection].Search(Update, connection, query.Tracks, false);
             }
         }
         public override Task OnConnectedAsync()

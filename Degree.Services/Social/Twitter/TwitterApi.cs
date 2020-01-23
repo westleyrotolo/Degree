@@ -18,7 +18,7 @@ using Degree.Services.Location.OpenStreetMap;
 using Tweetinvi.Events;
 using System.Threading;
 using System.Text.RegularExpressions;
-
+using System.Linq;
 namespace Degree.Services.Social.Twitter
 {
     public class TwitterApi
@@ -36,19 +36,29 @@ namespace Degree.Services.Social.Twitter
         {
 
         }
-        public static void Search(List<string> tracks)
+        public void Search(Action<TweetDto, string> _Update, string _Connection, List<string> tracks, bool enableLocation)
         {
-            Login();
 
+            cancellationToken = new CancellationTokenSource();
+            Connection = _Connection;
+            regex = new Regex(@"(?<=#)\w+");
+            Login();
+            Update = _Update;
+            GetLocation = new OpenStreetMapHelper();
             TweetinviConfig.CurrentThreadSettings.TweetMode = TweetMode.Extended;
-            var tweets = Tweetinvi.Search.SearchTweetsWithMetadata(new Tweetinvi.Parameters.SearchTweetsParameters(tracks[0])
+            Task.Factory.StartNew(async () => await TweetAnalysis(), cancellationToken.Token);
+            var tweets = Tweetinvi.Search.SearchTweets(new Tweetinvi.Parameters.SearchTweetsParameters(tracks[0])
             {
-                MaximumNumberOfResults = 10,
                 TweetSearchType = Tweetinvi.Parameters.TweetSearchType.OriginalTweetsOnly,
                 Filters = Tweetinvi.Parameters.TweetSearchFilters.Hashtags,
-                SearchType = SearchResultType.Recent
-               
+                SearchType = SearchResultType.Popular
+
             });
+            foreach (var tweet in tweets)
+            {
+                Tweets.Push(tweet);
+            }
+
         }
         public static ITweet FindById(long id)
         {
@@ -69,7 +79,6 @@ namespace Degree.Services.Social.Twitter
         {
             while (true)
             { 
-            await Task.Delay(1000);
             if (Tweets.Count > 0)
                 {
                     ITweet t = Tweets.Pop();

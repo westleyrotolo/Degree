@@ -51,7 +51,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   dates: Date[]
   updateMap() {
 
-    return;
+  
     this.tweetService.fetchGeoUsers().subscribe((x)=>
     {
         this.geoTweets = x;
@@ -76,7 +76,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   */
   updateDate( date: Date, _this ) {
     let minDate = new Date(date.getTime() - (1000*60*30));
-    timer(0, 100).subscribe(() => {
+    timer(0, 1000).subscribe(() => {
       
       console.log('start');
     console.log(date);
@@ -85,8 +85,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
        _tweets.forEach(element => {
          _this.addPin([element]);
        });
-       date = new Date(date.getTime()+ (1000 * 60*30));
-       minDate = new Date(date.getTime() - (1000*60*30));
+       date = new Date(date.getTime()+ (1000 * 60*60));
+       minDate = new Date(date.getTime() - (1000*60*60));
 
    });
 
@@ -98,7 +98,6 @@ delay(ms: number) {
 }
 
   startAnimation(fromDate: Date) {
-    return;
     let index = 0;
 
     console.log(fromDate);
@@ -129,7 +128,6 @@ delay(ms: number) {
     console.log('test:', this.mapDiv);
     
       this.tweetService.fetchTagCloud().subscribe((resp: WordCloud[])=>{
-        return;
         _this.wordData = resp;
         _this.maxCount = _this.wordData [0].count;
          console.log('data',_this.wordData)
@@ -263,7 +261,7 @@ delay(ms: number) {
       .style("stroke-opacity", 1)
       .style("fill-opacity", 1)
       .transition()
-      .duration(500)
+      .duration(1000)
       .ease(Math.sqrt)
       .style("stroke-opacity", .2)
       .style("fill-opacity", .2)
